@@ -4,7 +4,7 @@ test('test', async ({ page }) => {
   await page.goto('https://devdlpro.proto-dataline.com/');
 
    //5秒まつ
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(6000);
 
   // タイトルが「Example Domain」であることを確認
   await expect(page).toHaveTitle('Example DomainPRO（データラインプロ）法人向け中古車データ検索');
