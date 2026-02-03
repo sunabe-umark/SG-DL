@@ -21,11 +21,11 @@ test('test', async ({ page }) => {
 
 
   await page.getByRole('button', { name: 'ログイン' }).click();
-  //10秒まつ
+  //5秒まつ
   await page.waitForTimeout(5000);
   await page.getByRole('link', { name: 'ログアウト' }).click();
 
-   //10秒まつ
+   //5秒まつ
   await page.waitForTimeout(5000);
   await page.getByRole('button', { name: 'ログイン' }).click();
 });
