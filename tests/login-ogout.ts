@@ -26,6 +26,6 @@ test('test', async ({ page }) => {
   await page.getByRole('link', { name: 'ログアウト' }).click();
 
    //5秒まつ
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(6000);
   await page.getByRole('button', { name: 'ログイン' }).click();
 });
