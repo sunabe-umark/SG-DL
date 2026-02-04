@@ -22,7 +22,6 @@ test('test', async ({ page }) => {
   await page.getByRole('checkbox').check();
   await expect(page.getByRole('checkbox')).toBeChecked();
 
-
   await page.getByRole('button', { name: 'ログイン' }).click();
   //5秒まつ
   await page.waitForTimeout(5000);
