@@ -45,5 +45,5 @@ test('test', async ({ page }) => {
   await expect.soft(page.getByRole('textbox', { name: 'ログインID' })).toHaveValue('tst0001');
   await expect.soft(page.getByRole('textbox', { name: 'パスワード' })).toHaveValue('tst0001');
   await expect.soft(page.getByRole('checkbox')).toBeChecked();
-
+//マージ後コミット
 });
