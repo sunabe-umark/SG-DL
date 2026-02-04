@@ -30,4 +30,6 @@ test('test', async ({ page }) => {
    //5秒まつ
   await page.waitForTimeout(5000);
   await page.getByRole('button', { name: 'ログイン' }).click();
+
+  //ブランチ新規作成後、コミットしたファイル
 });
