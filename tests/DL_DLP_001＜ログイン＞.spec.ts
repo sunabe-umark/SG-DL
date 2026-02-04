@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-test.setTimeout(60000); // タイムアウトを60秒に延長（60000ms）
-
 test('test', async ({ page }) => {
   await page.goto('https://devdlpro.proto-dataline.com/');
 
