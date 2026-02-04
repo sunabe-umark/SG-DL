@@ -1,8 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-//古堅編集有22222ｓ
+//DLP回帰テスト-AA相場検索-グレード検索＞AA相場検索
+//ログイン画面
 
 test('test', async ({ page }) => {
+  //タイムアウト時間を60秒に設定
+  test.setTimeout(60000);
+
+  //ログイン画面へ遷移
   await page.goto('https://devdlpro.proto-dataline.com/top/top.php');
   await page.getByRole('textbox', { name: 'ログインID' }).click();
   await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0002');
@@ -67,5 +72,9 @@ await page.locator('input[name="e_price"]').fill('2000');
 await page.locator('tr:nth-child(7) > td:nth-child(6) > .aa_radio > .right').click();
 await page.getByText('落札', { exact: true }).click();
 await page.getByText('上記条件から検索 該当件数288件').click();
+
+//検索結果の確認　型式＝NHP10、内装評価＝Ｓが表示されていること
+await expect(page.getByRole('cell', { name: 'NHP10' }).first()).toBeVisible();
+await expect(page.getByRole('cell', { name: 'Ｓ' }).nth(1)).toBeVisible();
 
 });
