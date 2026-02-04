@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+//古堅編集有22222ｓ
+
 test('test', async ({ page }) => {
   await page.goto('https://devdlpro.proto-dataline.com/top/top.php');
   await page.getByRole('textbox', { name: 'ログインID' }).click();
