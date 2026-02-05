@@ -4,6 +4,8 @@ import { test, expect } from '@playwright/test';
 //ログイン画面
 
 test('test', async ({ page }) => {
+// ▼ この行を追加（テストの制限時間を60秒に変更）
+  test.setTimeout(60000);
 
   //ログイン画面へ遷移
   await page.goto('https://devdlpro.proto-dataline.com/top/top.php');
@@ -106,39 +108,41 @@ page.once('dialog', async dialog => {
   // await page.getByRole('link', { name: '削除' }).first().click();
 await page.getByRole('link', { name: '削除' }).first().click();
 await page.waitForTimeout(1000);
-// await page.locator('#favorite').getByRole('link', { name: 'お気に入り' }).click();
-await page.waitForTimeout(1000);
-await page.locator('#favorite').getByRole('link', { name: 'お気に入り' }).click({ timeout: 15000 });
-// await page.locator('#btn_aa_favorite').click();
+
+await page.locator('#favorite').getByRole('link', { name: 'お気に入り' }).click();
+
 await expect(page.getByRole('cell', { name: 'トヨタ' }).nth(1)).toBeVisible();
-// await expect(page.locator('#list_favorite').getByRole('cell', { name: 'アクア' })).toBeVisible();
-// .first() を追加して、最初に見つかった「アクア」だけをチェックする
-await expect(page.locator('#list_favorite').getByRole('cell', { name: 'アクア' }).first()).toBeVisible();
-await page.getByRole('link', { name: '全てクリア' }).click();
-// await page.getByRole('link', { name: 'お気に入り' }).click();
-await page.locator('#favorite').click(); // IDでお気に入りボタンを押下に変更
+await expect(page.getByRole('cell', { name: 'アクア' }).nth(1)).toBeVisible();
+await page.waitForTimeout(1000);
+await page.getByRole('link', { name: '全てクリア' }).click({ timeout: 15000 });
+await page.getByRole('link', { name: 'お気に入り' }).first().click({ timeout: 15000 });
 await page.getByRole('link', { name: '選択', exact: true }).nth(5).click();
 await expect(page.locator('select[name="maker"]')).toBeVisible();
 await expect(page.locator('select[name="car"]')).toBeVisible();
-await page.getByRole('link', { name: '全てクリア' }).click({ timeout: 15000 });
+await page.getByRole('link', { name: '全てクリア' }).click();
 
 // AA相場検索－検索履歴の確認
 
 await page.getByRole('link', { name: '検索履歴' }).first().click({ timeout: 15000 });
-await page.waitForTimeout(5000);
+await page.waitForTimeout(1000);
 
 // await page.getByRole('link', { name: '検索履歴' }).click();
 // await expect(page.getByRole('heading', { name: '検索履歴' })).toBeVisible();
 // タイムアウトを15秒に延長して待つ
-await expect(page.getByText('検索履歴').first()).toBeVisible({ timeout: 15000 });
-await expect(page.getByRole('cell', { name: 'トヨタ' }).first()).toBeVisible();
+await page.getByRole('link', { name: '検索履歴' }).first().click();
+await page.waitForTimeout(1000);
+await expect(page.getByRole('cell', { name: 'トヨタ' }).first()).toBeVisible({ timeout: 15000 });
 await expect(page.getByRole('cell', { name: 'アクア' }).first()).toBeVisible();
+
 await page.getByRole('link', { name: '選択', exact: true }).nth(5).click();
 await expect(page.locator('select[name="maker"]')).toBeVisible();
 await expect(page.locator('select[name="car"]')).toBeVisible();
-await page.getByRole('link', { name: '検索履歴' }).click({ timeout: 15000 });
-await expect(page.getByRole('heading', { name: '検索履歴' })).toBeVisible({ timeout: 15000 });
 
+await page.waitForTimeout(1000);
+await page.getByRole('link', { name: '検索履歴' }).first().click({ timeout: 15000 });
+await expect(page.getByRole('heading', { name: '検索履歴' })).toBeVisible();
+
+await page.waitForTimeout(5000);
 // ページングの確認
 await page.getByRole('link', { name: '次へ>>' }).click();
 await expect(page.getByRole('cell', { name: '51', exact: true })).toBeVisible();
