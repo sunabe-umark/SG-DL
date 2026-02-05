@@ -4,8 +4,6 @@ import { test, expect } from '@playwright/test';
 //ログイン画面
 
 test('test', async ({ page }) => {
-  //タイムアウト時間を60秒に設定
-  test.setTimeout(60000);
 
   //ログイン画面へ遷移
   await page.goto('https://devdlpro.proto-dataline.com/top/top.php');
@@ -73,8 +71,84 @@ await page.locator('tr:nth-child(7) > td:nth-child(6) > .aa_radio > .right').cli
 await page.getByText('落札', { exact: true }).click();
 await page.getByText('上記条件から検索 該当件数288件').click();
 
-//検索結果の確認　型式＝NHP10、内装評価＝Ｓが表示されていること0205
-await expect(page.getByRole('cell', { name: 'NHP10' }).first()).toBeVisible();
-await expect(page.getByRole('cell', { name: 'Ｓ' }).nth(1)).toBeVisible();
 
+//検索結果の確認　型式＝NHP10、内装評価＝Ｓが表示されていること0205
+await expect(page.getByRole('cell', { name: 'NHP10' }).first()).toBeVisible({ timeout: 15000 });
+await expect(page.getByRole('cell', { name: 'Ｓ' }).nth(1)).toBeVisible({ timeout: 15000 });
+
+//印刷画面の確認　トヨタ、アクアが表示されていること
+const page1Promise = page.waitForEvent('popup');
+  await page.getByRole('link', { name: '印刷' }).click();
+  const page1 = await page1Promise;
+await expect(page1.getByText('トヨタ')).toBeVisible();
+await expect(page1.getByText('アクア')).toBeVisible();
+await page1.getByRole('button', { name: '閉じる' }).click();
+
+//カスタマイズ表示　非表示の確認
+await page.getByText('カスタマイズ').click({ timeout: 15000 });
+await expect(page.locator('._btn').first()).toBeVisible();
+await expect(page.locator('._btn.js_soat_switch.is-off')).toBeVisible();
+await page.locator('.soat_pop_close').click();
+
+// お気に入り登録、削除の確認
+await page.getByRole('link', { name: 'お気に入り' }).click();
+page.once('dialog', dialog => {
+    console.log(`Dialog message: ${dialog.message()}`);
+    dialog.dismiss().catch(() => {});
+  });
+// ① 邪魔をしている既存のダイアログ設定（共通設定など）を一度リセットする
+page.removeAllListeners('dialog');
+// ① ダイアログが表示されたら「OK」を押す設定をあらかじめ行う
+page.once('dialog', async dialog => {
+    console.log(`ダイアログ内容: ${dialog.message()}`); // ログにメッセージを出力（確認用）
+    await dialog.accept(); // ★ここで「OK」ボタンを押下します
+});
+  // await page.getByRole('link', { name: '削除' }).first().click();
+await page.getByRole('link', { name: '削除' }).first().click();
+await page.waitForTimeout(1000);
+// await page.locator('#favorite').getByRole('link', { name: 'お気に入り' }).click();
+await page.waitForTimeout(1000);
+await page.locator('#favorite').getByRole('link', { name: 'お気に入り' }).click({ timeout: 15000 });
+// await page.locator('#btn_aa_favorite').click();
+await expect(page.getByRole('cell', { name: 'トヨタ' }).nth(1)).toBeVisible();
+// await expect(page.locator('#list_favorite').getByRole('cell', { name: 'アクア' })).toBeVisible();
+// .first() を追加して、最初に見つかった「アクア」だけをチェックする
+await expect(page.locator('#list_favorite').getByRole('cell', { name: 'アクア' }).first()).toBeVisible();
+await page.getByRole('link', { name: '全てクリア' }).click();
+// await page.getByRole('link', { name: 'お気に入り' }).click();
+await page.locator('#favorite').click(); // IDでお気に入りボタンを押下に変更
+await page.getByRole('link', { name: '選択', exact: true }).nth(5).click();
+await expect(page.locator('select[name="maker"]')).toBeVisible();
+await expect(page.locator('select[name="car"]')).toBeVisible();
+await page.getByRole('link', { name: '全てクリア' }).click({ timeout: 15000 });
+
+// AA相場検索－検索履歴の確認
+
+await page.getByRole('link', { name: '検索履歴' }).first().click({ timeout: 15000 });
+await page.waitForTimeout(5000);
+
+// await page.getByRole('link', { name: '検索履歴' }).click();
+// await expect(page.getByRole('heading', { name: '検索履歴' })).toBeVisible();
+// タイムアウトを15秒に延長して待つ
+await expect(page.getByText('検索履歴').first()).toBeVisible({ timeout: 15000 });
+await expect(page.getByRole('cell', { name: 'トヨタ' }).first()).toBeVisible();
+await expect(page.getByRole('cell', { name: 'アクア' }).first()).toBeVisible();
+await page.getByRole('link', { name: '選択', exact: true }).nth(5).click();
+await expect(page.locator('select[name="maker"]')).toBeVisible();
+await expect(page.locator('select[name="car"]')).toBeVisible();
+await page.getByRole('link', { name: '検索履歴' }).click({ timeout: 15000 });
+await expect(page.getByRole('heading', { name: '検索履歴' })).toBeVisible({ timeout: 15000 });
+
+// ページングの確認
+await page.getByRole('link', { name: '次へ>>' }).click();
+await expect(page.getByRole('cell', { name: '51', exact: true })).toBeVisible();
+await page.getByRole('link', { name: '<<前へ' }).click();
+await expect(page.getByRole('cell', { name: '1', exact: true })).toBeVisible();
+await page.getByRole('link', { name: '2' }).click();
+await expect(page.getByRole('cell', { name: '51', exact: true })).toBeVisible();
+
+// すべてクリアの確認
+await page.getByRole('link', { name: '全てクリア' }).click();
+await expect(page.locator('select[name="maker"]')).toBeVisible();
+await expect(page.locator('select[name="car"]')).toBeVisible();
 });
