@@ -73,7 +73,7 @@ await page.locator('tr:nth-child(7) > td:nth-child(6) > .aa_radio > .right').cli
 await page.getByText('落札', { exact: true }).click();
 await page.getByText('上記条件から検索 該当件数288件').click();
 
-//検索結果の確認　型式＝NHP10、内装評価＝Ｓが表示されていること
+//検索結果の確認　型式＝NHP10、内装評価＝Ｓが表示されていること0205
 await expect(page.getByRole('cell', { name: 'NHP10' }).first()).toBeVisible();
 await expect(page.getByRole('cell', { name: 'Ｓ' }).nth(1)).toBeVisible();
 
