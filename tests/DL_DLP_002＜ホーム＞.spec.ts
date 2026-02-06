@@ -182,5 +182,5 @@ await page.waitForTimeout(2000);
 await page.getByText('ＡＡ相場で検索 該当件数83件').click();
 await page.waitForTimeout(3000);
 await expect(page.locator('#t_result_area')).toContainText('Ｓ');
-//２０２６コミット
+//0206コミット
 });
