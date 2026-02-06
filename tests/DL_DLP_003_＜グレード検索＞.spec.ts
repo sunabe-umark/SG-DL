@@ -27,10 +27,13 @@ test('test', async({page, context})=> {
     await page.waitForTimeout(3000);
   await page.locator('#Model').selectOption('13');
   await page.goto('https://devdlpro.proto-dataline.com/grade/grade.php#19c31f8380412c6d');
+  
+  await page.locator('input[name="frame_for_maker"]').fill('1234');
+
     await page.waitForTimeout(3000);
   await page.locator('#age_type3').selectOption('2012');
     await page.waitForTimeout(3000);
-  await page.locator('#age_type4').selectOption('2014');
+  await page.locator('#age_type4').selectOption('2023');
     await page.waitForTimeout(3000);
   await page.locator('#search_maker_btn').click();
 //FURUGENブランチでコミット

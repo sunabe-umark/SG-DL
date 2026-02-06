@@ -98,7 +98,7 @@ const page4Promise = page.waitForEvent('popup');
   await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/grade/grade.php'); 
 
   await page.getByRole('link', { name: 'AA相場' }).click();
-   await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/aa/aa.php');
+  await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/aa/aa.php');
 
   await page.getByRole('link', { name: '小売相場' }).click();
   await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/retail/retail.php');
