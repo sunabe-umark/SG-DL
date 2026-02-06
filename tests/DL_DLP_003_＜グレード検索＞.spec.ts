@@ -33,5 +33,5 @@ test('test', async({page, context})=> {
   await page.locator('#age_type4').selectOption('2014');
     await page.waitForTimeout(3000);
   await page.locator('#search_maker_btn').click();
-
+//FURUGENブランチでコミット
   });
