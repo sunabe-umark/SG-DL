@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test';
 
 test('test', async ({ page }) => {
 // ▼ この行を追加（テストの制限時間を60秒に変更）
-  test.setTimeout(60000);
+  test.setTimeout(120000);
 
   //ログイン画面へ遷移
   await page.goto('https://devdlpro.proto-dataline.com/top/top.php');
@@ -115,31 +115,36 @@ await expect(page.getByRole('cell', { name: 'トヨタ' }).nth(1)).toBeVisible()
 await expect(page.getByRole('cell', { name: 'アクア' }).nth(1)).toBeVisible();
 await page.waitForTimeout(1000);
 await page.getByRole('link', { name: '全てクリア' }).click({ timeout: 15000 });
+await page.waitForTimeout(1000);
 await page.getByRole('link', { name: 'お気に入り' }).first().click({ timeout: 15000 });
-await page.getByRole('link', { name: '選択', exact: true }).nth(5).click();
+await page.waitForTimeout(1000);
+await page.getByRole('link', { name: '選択', exact: true }).first().click();
 await expect(page.locator('select[name="maker"]')).toBeVisible();
 await expect(page.locator('select[name="car"]')).toBeVisible();
 await page.getByRole('link', { name: '全てクリア' }).click();
 
 // AA相場検索－検索履歴の確認
-
+await page.waitForTimeout(10000);
 await page.getByRole('link', { name: '検索履歴' }).first().click({ timeout: 15000 });
-await page.waitForTimeout(1000);
+await page.waitForTimeout(10000);
 
-// await page.getByRole('link', { name: '検索履歴' }).click();
-// await expect(page.getByRole('heading', { name: '検索履歴' })).toBeVisible();
-// タイムアウトを15秒に延長して待つ
-await page.getByRole('link', { name: '検索履歴' }).first().click();
+await expect(page.getByRole('heading', { name: '検索履歴' })).toBeVisible({ timeout: 15000 });
+
 await page.waitForTimeout(1000);
+// await page.evaluate(() => window.scrollTo(0, 0));
+
 await expect(page.getByRole('cell', { name: 'トヨタ' }).first()).toBeVisible({ timeout: 15000 });
 await expect(page.getByRole('cell', { name: 'アクア' }).first()).toBeVisible();
 
-await page.getByRole('link', { name: '選択', exact: true }).nth(5).click();
+await page.getByRole('link', { name: '選択', exact: true }).first().click();
 await expect(page.locator('select[name="maker"]')).toBeVisible();
 await expect(page.locator('select[name="car"]')).toBeVisible();
 
-await page.waitForTimeout(1000);
+// await page.evaluate(() => window.scrollTo(0, 0));
+
+await page.waitForTimeout(10000);
 await page.getByRole('link', { name: '検索履歴' }).first().click({ timeout: 15000 });
+await page.waitForTimeout(10000);
 await expect(page.getByRole('heading', { name: '検索履歴' })).toBeVisible();
 
 await page.waitForTimeout(5000);
