@@ -10,9 +10,12 @@ test('test', async({page, context})=> {
   await page.waitForTimeout(3000);
 
   await page.getByRole('button', { name: 'ログイン' }).click();
+  await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/top/top.php'); 
 
- await page.getByRole('link', { name: 'グレード検索' }).click();
-  await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/grade/grade.php'); 
-
+  await page.getByRole('link', { name: 'グレード検索' }).click();
   await page.waitForTimeout(3000);
+  await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/grade/grade.php'); 
+  
+
+  //await page.waitForTimeout(3000);
   });
