@@ -8,6 +8,8 @@ export default defineConfig({
   timeout: 60 * 1000, // 60秒にする
   use: {
     trace: 'on-first-retry',
+    // 画面サイズを指定（例: 幅1920, 高さ1080）
+    viewport: { width: 1920, height: 1080 },
   },
   projects: [
     {
@@ -16,15 +18,6 @@ export default defineConfig({
     },
   ],
   
-  use: {
-    // 画面サイズを指定（例: 幅1920, 高さ1080）
-    viewport: { width: 1920, height: 1080 },
-  },
-  projects: [
-    {
-      name: 'Desktop Chrome',
-      use: { ...devices['Desktop Chrome'] },
-    },
 
 });
 
