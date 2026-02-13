@@ -179,7 +179,9 @@ await page.getByRole('textbox', { name: '年式' }).click();
 await page.waitForTimeout(3000);
 await page.getByRole('treeitem', { name: '(H29)' }).click();
 await page.waitForTimeout(2000);
-await page.getByText('ＡＡ相場で検索 該当件数83件').click();
+//await page.getByText('ＡＡ相場で検索 該当件数83件').click();
+await page.locator('#info_box').getByText('ＡＡ相場').click();
+
 await page.waitForTimeout(3000);
 await expect(page.locator('#t_result_area')).toContainText('Ｓ');
 //0206コミット2
