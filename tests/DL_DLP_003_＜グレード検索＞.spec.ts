@@ -17,7 +17,7 @@ test('test', async({page, context})=> {
   await expect.soft(page).toHaveURL('https://stgdlpro.proto-dataline.com/grade/grade.php'); 
   
   await page.waitForTimeout(2000);
-/*02121448 
+
  //No.3
   await page.locator('#Maker').selectOption('1010');
   await page.goto('https://stgdlpro.proto-dataline.com/grade/grade.php#19c31f801b8efe4');
@@ -46,26 +46,32 @@ test('test', async({page, context})=> {
 
  //No.9
   await expect(page.locator('#result_body')).toContainText('Ｇ');
+  const gradesearch1 = (await page.locator('#result_body > table > tbody > tr:nth-child(1) > td.col_g_grade').first().textContent())?.trim();  
+  console.log('一つ目のグレードは:', gradesearch1);
  //No.10
   await expect(page.locator('#result_body')).toContainText('Ｓ');
+  const gradesearch2 = (await page.locator('#result_body > table > tbody > tr:nth-child(2) > td.col_g_grade').first().textContent())?.trim();  
+  console.log('二つ目のグレードは:', gradesearch2);
  //No.11
   await expect(page.locator('#result_body')).toContainText('Ｌ');
+  const gradesearch3 = (await page.locator('#result_body > table > tbody > tr:nth-child(3) > td.col_g_grade').first().textContent())?.trim();  
+  console.log('三つ目のグレードは:', gradesearch3); 
  //No.12
   await expect(page.locator('#result_body')).toContainText('Ｓスタイルブラック');
+  const gradesearch4 = (await page.locator('#result_body > table > tbody > tr:nth-child(4) > td.col_g_grade').first().textContent())?.trim();  
+  console.log('四つ目のグレードは:', gradesearch4);
 
-  const targetText1 = (await page.locator('#result_body > table > tbody > tr:nth-child(1) > td.col_g_grade').first().textContent())?.trim();  
-  
-  console.log('取得した値1の中身は:', targetText1);
- //No.13
+
+  //No.13
   await page.getByRole('link', { name: 'ＡＡ' }).first().click();await page.waitForTimeout(3000);
   await page.waitForTimeout(1000);
  //No.14
   await expect.soft(page).toHaveURL(/.*aa.php/); 
  //No.15
   await page.waitForTimeout(1000);
-  await expect(page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_grade_nm')).toHaveText(targetText1!);
-  await expect(page.locator('#t_result_area > tbody > tr:nth-child(2) > td.col_grade_nm')).toHaveText(targetText1!);
-  await expect(page.locator('#t_result_area > tbody > tr:nth-child(3) > td.col_grade_nm')).toHaveText(targetText1!);
+  await expect(page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_grade_nm')).toHaveText(gradesearch1!);
+  await expect(page.locator('#t_result_area > tbody > tr:nth-child(2) > td.col_grade_nm')).toHaveText(gradesearch1!);
+  await expect(page.locator('#t_result_area > tbody > tr:nth-child(3) > td.col_grade_nm')).toHaveText(gradesearch1!);
   await page.waitForTimeout(1000);
 
 
@@ -127,39 +133,44 @@ test('test', async({page, context})=> {
   //No.25 
    await page.getByRole('link', { name: 'チェックしたグレードの装備を比較' }).click();
 
+  await expect(page.getByRole('cell', { name: '販売年月' })).not.toBeVisible();
+
   //No.26
-   await expect(page.locator('#ResultArea')).toContainText('Ｇ');
+   //await expect.soft(page.locator('#ResultArea')).toContainText(gradesearch2!);
+   await expect.soft(page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(3)')).toHaveText(gradesearch1!);
   //No.27
-   await expect(page.locator('#ResultArea')).toContainText('Ｓ');
+   //await expect.soft(page.locator('#ResultArea')).toContainText('Ｓ');
+   await expect(page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(4)')).toHaveText(gradesearch2!);
   //No.28
-   await expect(page.locator('#ResultArea')).toContainText('Ｌ');
+   //await expect.soft(page.locator('#ResultArea')).toContainText('Ｌ');
+   await expect(page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(5)')).toHaveText(gradesearch3!);  
   //No.29
-   await expect(page.locator('#ResultArea')).toContainText('Ｓスタイルブラック');
+   //await expect.soft(page.locator('#ResultArea')).toContainText('Ｓスタイルブラック');
+   await expect(page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(6)')).toHaveText(gradesearch4!); 
 
   //No.30
-   const page1Promise = page.waitForEvent('popup');
+   const page2Promise = page.waitForEvent('popup');
    await page.getByRole('link', { name: '印刷' }).click();
-   const page1 = await page1Promise;
+   const page2 = await page2Promise;
 
    await page.waitForTimeout(1000);
    await page.setViewportSize({ width: 1209, height: 700 });
    await page.waitForTimeout(1000);
 
   //No.31  
-   await page1.getByRole('button', { name: '閉じる' }).click();
+   await page2.getByRole('button', { name: '閉じる' }).click();
 
-  const targetText2 = (await page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(3)').first().textContent())?.trim();  
-
-  console.log('取得した値2の中身は:', targetText2);
+ // const targetText2 = (await page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(3)').first().textContent())?.trim();  
+ // console.log('取得した値2の中身は:', targetText2);
 
   //No.32    
    await page.getByRole('link', { name: 'ＡＡ相場' }).first().click();
    await page.waitForTimeout(1000);
 
   //No.33      
-   await expect(page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_grade_nm')).toHaveText(targetText2!);
-   await expect(page.locator('#t_result_area > tbody > tr:nth-child(2) > td.col_grade_nm')).toHaveText(targetText2!);
-   await expect(page.locator('#t_result_area > tbody > tr:nth-child(3) > td.col_grade_nm')).toHaveText(targetText2!);
+   await expect(page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_grade_nm')).toHaveText(gradesearch1!);
+   await expect(page.locator('#t_result_area > tbody > tr:nth-child(2) > td.col_grade_nm')).toHaveText(gradesearch1!);
+   await expect(page.locator('#t_result_area > tbody > tr:nth-child(3) > td.col_grade_nm')).toHaveText(gradesearch1!);
 
   //No.34     
    //ブラウザバック
@@ -179,18 +190,18 @@ test('test', async({page, context})=> {
    
    await page.getByRole('link', { name: 'チェックしたグレードの装備を比較' }).click();
 
-   const targetText3 = (await page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(4)').first().textContent())?.trim();  
+   //const targetText3 = (await page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(4)').first().textContent())?.trim();  
+   //console.log('取得した値3の中身は:', targetText3);
 
-   console.log('取得した値3の中身は:', targetText3);
-  //No.35  
+   //No.35  
    await page.getByRole('link', { name: '小売相場' }).nth(2).click();
    await page.waitForTimeout(1000);
 
    await expect.soft(page).toHaveURL(/.*retail.php/); 
  //No.36
-   await expect(page.locator('[id="1002928A30251121W001"] > td.col_p_grade_nm_n')).toHaveText(targetText3!);
-   await expect(page.locator('[id="0551807A30250923W001"] > td.col_p_grade_nm_n')).toHaveText(targetText3!);
-   await expect(page.locator('[id="0800785A20251028T001"] > td.col_p_grade_nm_n')).toHaveText(targetText3!);
+   await expect(page.locator('[id="1002928A30251121W001"] > td.col_p_grade_nm_n')).toHaveText(gradesearch2!);
+   await expect(page.locator('[id="0551807A30250923W001"] > td.col_p_grade_nm_n')).toHaveText(gradesearch2!);
+   await expect(page.locator('[id="0800785A20251028T001"] > td.col_p_grade_nm_n')).toHaveText(gradesearch2!);
   
   
  //No.37 
@@ -211,9 +222,10 @@ test('test', async({page, context})=> {
    
    await page.getByRole('link', { name: 'チェックしたグレードの装備を比較' }).click();
 
-   const targetText4 = (await page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(5)').first().textContent())?.trim();  
-   console.log('取得した値4の中身は:', targetText4);
- //No.38 
+  // const targetText4 = (await page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(5)').first().textContent())?.trim();  
+  // console.log('取得した値4の中身は:', targetText4);
+
+   //No.38 
    await page.getByRole('link', { name: '買取・下取' }).nth(2).click();
    await page.waitForTimeout(1000);
 
@@ -221,8 +233,8 @@ test('test', async({page, context})=> {
   // await expect(page.locator('#result_body')).toContainText('Ｌ');
   // await expect(page.locator('#result_body')).toContainText('Ｌ');
  //No.39
-   await expect(page.locator('#result_body > table > tbody > tr:nth-child(1) > td.col_g_grade')).toHaveText(targetText4!);
-   await expect(page.locator('#result_body > table > tbody > tr:nth-child(2) > td.col_g_grade')).toHaveText(targetText4!);
+   await expect(page.locator('#result_body > table > tbody > tr:nth-child(1) > td.col_g_grade')).toHaveText(gradesearch3!);
+   await expect(page.locator('#result_body > table > tbody > tr:nth-child(2) > td.col_g_grade')).toHaveText(gradesearch3!);
 //#target > td.col_g_grade
 
  //No.40 
@@ -245,8 +257,8 @@ test('test', async({page, context})=> {
 
    await page.getByRole('link', { name: 'チェックしたグレードの装備を比較' }).click();
 
-   const targetText5 = (await page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(6)').first().textContent())?.trim();  
-   console.log('取得した値5の中身は:', targetText5);
+  // const targetText5 = (await page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(6)').first().textContent())?.trim();  
+  // console.log('取得した値5の中身は:', targetText5);
 
  //No.41  
    await page.getByRole('link', { name: '注文販売' }).nth(4).click();
@@ -257,10 +269,10 @@ test('test', async({page, context})=> {
    //await expect(page.locator('#result_body')).toContainText('Ｓスタイルブラック');
    //await expect(page.locator('#result_body')).toContainText('Ｓスタイルブラック');
 
-   await expect(page.locator('#result_body > table > tbody > tr:nth-child(1) > td.col_sb_grade')).toHaveText(targetText5!);
-   await expect(page.locator('#result_body > table > tbody > tr:nth-child(2) > td.col_sb_grade')).toHaveText(targetText5!);
-   await expect(page.locator('#result_body > table > tbody > tr:nth-child(3) > td.col_sb_grade')).toHaveText(targetText5!);
-   await expect(page.locator('#result_body > table > tbody > tr:nth-child(4) > td.col_sb_grade')).toHaveText(targetText5!);
+   await expect(page.locator('#result_body > table > tbody > tr:nth-child(1) > td.col_sb_grade')).toHaveText(gradesearch4!);
+   await expect(page.locator('#result_body > table > tbody > tr:nth-child(2) > td.col_sb_grade')).toHaveText(gradesearch4!);
+   await expect(page.locator('#result_body > table > tbody > tr:nth-child(3) > td.col_sb_grade')).toHaveText(gradesearch4!);
+   await expect(page.locator('#result_body > table > tbody > tr:nth-child(4) > td.col_sb_grade')).toHaveText(gradesearch4!);
 //#target > td.col_g_grade
  
 //No.43
@@ -268,7 +280,9 @@ test('test', async({page, context})=> {
    await page.goBack();
 //No.44
   await expect.soft(page).toHaveURL(/.*grade.php/); 
-*/
+
+  await page.locator('#search_maker_btn').click();
+
 //No.45~48
   await page.getByRole('row', { name: '(R2)/8～2021(R3)/7 NHP10 アクア Ｇ NHP10AHXEB 5 右 1500 CVT FF 5名 212.63' }).getByRole('checkbox').check();
   await page.getByRole('row', { name: '(R2)/8～2021(R3)/7 NHP10 アクア Ｓ NHP10AHXNB 5 右 1500 CVT FF 5名 192.17' }).getByRole('checkbox').check();
@@ -281,23 +295,56 @@ test('test', async({page, context})=> {
 
 //No.50  
   await page.getByRole('link', { name: 'チェックしたグレードの装備を比較' }).click();
+//差分のみ表示されているとことを確認する方法を検討  
 
-//差分のみ表示されていると戸を確認する方法を検討  
+await expect(page.getByRole('cell', { name: '販売年月' })).not.toBeVisible();
 
-/*
+ //No.51
+  //await expect.soft(page.locator('#ResultArea')).toContainText(gradesearch2!);
+  await expect.soft(page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(3)')).toHaveText(gradesearch1!);
+//No.52
+  //await expect.soft(page.locator('#ResultArea')).toContainText('Ｓ');
+  await expect(page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(4)')).toHaveText(gradesearch2!);
+//No.53
+  //await expect.soft(page.locator('#ResultArea')).toContainText('Ｌ');
+  await expect(page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(5)')).toHaveText(gradesearch3!);  
+//No.54
+  //await expect.soft(page.locator('#ResultArea')).toContainText('Ｓスタイルブラック');
+  await expect(page.locator('#grade_compare > table > tbody > tr:nth-child(1) > td:nth-child(6)')).toHaveText(gradesearch4!); 
+
+//No.55
+   const page1Promise = page.waitForEvent('popup');
+   await page.getByRole('link', { name: '印刷' }).click();
+   const page1 = await page1Promise;
+
+   await page.waitForTimeout(1000);
+   await page.setViewportSize({ width: 1210, height: 700 });
+   await page.waitForTimeout(1000);  
+//No.56  
+  await page1.getByRole('button', { name: '閉じる' }).click();
+
 //No.57 
    await page.getByRole('link', { name: '検索履歴' }).click();
 
-
+   /*
    await expect(page.locator('#list_history')).toContainText('2012(H24) 〜 2023(R5)');
    await expect(page.locator('#list_history')).toContainText('トヨタ');
    await expect(page.locator('#list_history')).toContainText('アクア');
    await expect(page.locator('#list_history')).toContainText('NHP10');
+  */
+   await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(6)')).toHaveText('2012(H24) 〜 2023(R5)');
+   await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(9)')).toHaveText('トヨタ');
+   await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(10)')).toHaveText('アクア');
+   await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(11)')).toHaveText('NHP10');   
+   await expect(page.locator('#list_history > table > tbody > tr:nth-child(6) > td:nth-child(7)')).toHaveText('1234');   
+ 
+
    //ブラウザバックのタイミングで車台番号がクリアされている
    await expect.soft(page.getByRole('cell').filter({ hasText: /^$/ }).nth(2)).toBeVisible();
-
+   await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(7)')).toHaveText('');   
  await page.reload();
- 
+
+/* 
  await page.waitForTimeout(1000);
 //ここから商用車のテスト
 
@@ -334,7 +381,7 @@ await page.goto('https://stgdlpro.proto-dataline.com/grade/grade.php#19c5550e023
   
    console.log('取得した値6の中身は:', targetText6);
 
-  　await page.getByRole('link', { name: '小売' }).nth(1).click();
+   await page.getByRole('link', { name: '小売' }).nth(1).click();
 
    await expect.soft(page).toHaveURL(/.*retail.php/); 
 
@@ -346,7 +393,7 @@ await page.goto('https://stgdlpro.proto-dataline.com/grade/grade.php#19c5550e023
    await page.goBack(); 
    await page.waitForTimeout(1000);
 
- 　await page.reload();
+   await page.reload();
     await page.waitForTimeout(1000);
   
     await page.locator('#search_maker_btn').click();
@@ -355,7 +402,6 @@ await page.goto('https://stgdlpro.proto-dataline.com/grade/grade.php#19c5550e023
     await expect(page.locator('#result_body')).toContainText('ＧＬ');
     await expect(page.locator('#result_body')).toContainText('HBZNMGFS21SZ5C----');
 
-*/
     await page.getByRole('link', { name: 'グレード検索' }).click();
     await page.locator('input[name="katashiki"]').click();
     await page.locator('input[name="katashiki"]').fill('10656');
@@ -428,6 +474,6 @@ await page.goto('https://stgdlpro.proto-dataline.com/grade/grade.php#19c5550e023
 
 
   await page.getByRole('link', { name: '買取' }).first().click();
-
+*/
 });
 
