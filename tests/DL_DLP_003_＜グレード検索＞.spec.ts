@@ -161,7 +161,7 @@ test('test', async({page, context})=> {
       const page2 = await page2Promise;
 
    await page.waitForTimeout(1000);
-   await page.setViewportSize({ width: 1209, height: 700 });
+   await page.setViewportSize({ width: 1250, height: 800 });
    await page.waitForTimeout(1000);
    await expect.soft(page2).toHaveURL(/.*is_grade_only=/);  
 
@@ -328,7 +328,7 @@ await expect(page.getByRole('cell', { name: '販売年月' })).not.toBeVisible()
    const page3 = await page3Promise;
 
    await page.waitForTimeout(1000);
-   await page.setViewportSize({ width: 1210, height: 700 });
+   await page.setViewportSize({ width: 1251, height: 800 });
 
    await expect.soft(page3).toHaveURL(/.*is_grade_only=/);  
 //No.56  
@@ -578,7 +578,9 @@ await expect(page.getByRole('list')).toContainText('全 200 件中 1 - 50件');
 
 //No.118
   await page.getByRole('link', { name: '次へ>>' }).click();
-  await page.waitForTimeout(4000);
+  //await page.waitForTimeout(4000);
+  //遷移後、一行目”No”が「51」になるまでまつ
+  await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(1)').first()).toHaveText('51')
   text = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
    console.log('表示中の件数は:', text); 
   // 2. 変数の中に「1」が含まれているか検証
@@ -586,7 +588,9 @@ await expect(page.getByRole('list')).toContainText('全 200 件中 1 - 50件');
 
 //No.119  
   await page.getByRole('link', { name: '<<前へ' }).click();
-  await page.waitForTimeout(4000);
+  //await page.waitForTimeout(4000);
+  //遷移後、一行目”No”が「1」になるまでまつ
+  await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(1)').first()).toHaveText('1')
    // 1. テキストを取得
   text = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
    console.log('表示中の件数は:', text); 
@@ -595,14 +599,18 @@ await expect(page.getByRole('list')).toContainText('全 200 件中 1 - 50件');
 
 //No.120
   await page.getByRole('link', { name: '2' }).click();
-  await page.waitForTimeout(4000);
+  //await page.waitForTimeout(4000);
+  //遷移後、一行目”No”が「51」になるまでまつ
+  await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(1)').first()).toHaveText('51')
   text = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
    console.log('表示中の件数は:', text); 
   // 2. 変数の中に「1」が含まれているか検証
   expect(text).toContain(' 件中 51 -');
 //No.121
   await page.getByRole('link', { name: '1' }).click();
-  await page.waitForTimeout(4000);
+  //await page.waitForTimeout(4000);
+  //遷移後、一行目”No”が「1」になるまでまつ
+  await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(1)').first()).toHaveText('1')
    // 1. テキストを取得
   text = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
    console.log('表示中の件数は:', text); 
