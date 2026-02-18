@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from  '../../custom-test';
 
-test('test', async({page, context})=> {
+test('グレード検索', async({page, context})=> {
   test.setTimeout(300000);
   await page.goto('https://stgdlpro.proto-dataline.com/');
 

@@ -1,7 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../custom-test';
 
 
-test('test', async({page, context})=> {
+test('ホーム', async({page, context})=> {
   await page.goto('https://devdlpro.proto-dataline.com/');
 
   await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0001');

@@ -42,6 +42,7 @@ class MyMarkdownReporter implements Reporter {
     this.markdownLines.push(`# 🎭 Playwright テスト手順レポート`);
     this.markdownLines.push(`実行日時: ${new Date().toLocaleString('ja-JP')}\n`);
     this.markdownLines.push(`---`);
+    
   }
 
   async onTestEnd(test: TestCase, result: TestResult) {
