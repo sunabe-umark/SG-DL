@@ -6,7 +6,7 @@ class MyMarkdownReporter implements Reporter {
   private markdownLines: string[] = [];
   private reportDir: string;
   private stats = { total: 0, passed: 0, failed: 0, skipped: 0 };
-
+/*
   constructor() {
     const now = new Date();
     const timestamp = now.getFullYear() +
@@ -19,6 +19,24 @@ class MyMarkdownReporter implements Reporter {
     this.reportDir = path.join(process.cwd(), 'test-reports', `run-${timestamp}`);
     if (!fs.existsSync(this.reportDir)) fs.mkdirSync(this.reportDir, { recursive: true });
   }
+*/
+  constructor() {
+    // ★ 修正箇所：環境変数からパスを取得する。設定されていなければデフォルト値
+    const envPath = process.env.MY_REPORT_DIR;
+    
+    if (envPath) {
+      this.reportDir = envPath;
+    } else {
+      // 万が一、環境変数が取れなかった時のためのバックアップ
+      this.reportDir = path.join(process.cwd(), 'test-reports', 'latest-run');
+    }
+
+    // フォルダ作成（既にconfig側やHTMLレポーター側で作られている可能性もあるが、安全のため）
+    if (!fs.existsSync(this.reportDir)) {
+      fs.mkdirSync(this.reportDir, { recursive: true });
+    }
+  }
+
 
   onBegin(config: FullConfig, suite: Suite) {
     this.markdownLines.push(`# 🎭 Playwright テスト手順レポート`);
