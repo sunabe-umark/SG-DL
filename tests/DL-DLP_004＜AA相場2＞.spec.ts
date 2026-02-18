@@ -5,8 +5,7 @@ import { test, expect } from '@playwright/test';
 
 test('test', async ({ page }) => {
 // ▼ この行を追加（テストの制限時間を120秒に変更）
-  test.setTimeout(180000);
-
+  test.setTimeout(240000);
 
   //ログイン画面へ遷移
   await page.goto('https://devdlpro.proto-dataline.com/top/top.php');
@@ -29,34 +28,57 @@ test('test', async ({ page }) => {
   await page.waitForTimeout(1000);
 //await page.getByText('上記条件から検索 該当件数13,981件').click();
   await page.getByText('上記条件から検索 該当件数').click();
-  const targetTextprice = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_price_num > b').first().textContent())?.trim();  
+ await page.waitForTimeout(3000);
 
-// /*ここからスキップ
-
-  console.log('ソート前、取得した１件目の金額の値の中身は:', targetTextprice);
+  const targetTextprice1 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_price_num > b').first().textContent())?.trim();  
+  console.log('ソート前、取得した１件目の金額の値の中身は:', targetTextprice1);
 //金額でソート（昇順）
   await page.locator('.col_price_num > a').first().click();
-  await page.waitForTimeout(5000);
-  const targetTextprice2 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_price_num').first().textContent())?.trim();  
 
-  console.log('ソート（昇順）後、取得した１件目の金額の値の中身は:', targetTextprice2);
+// 1. 監視する要素を定義
+const targetElement1 = page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_price_num > b');
+// 2. 【重要】更新処理で一瞬消えた要素が、再び画面に現れるのを待つ
+await targetElement1.waitFor({ state: 'visible', timeout: 30000 });
+// 3. テキストが「値1（古い値）」ではなくなるまで待機する
+await expect(targetElement1).not.toHaveText(targetTextprice1, { timeout: 30000 });
+
+const targetTextprice2 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_price_num').first().textContent())?.trim();  
+
 // ▼▼▼ ここに追加：値が一致していない（変更された）ことを確認する ▼▼▼
-expect(targetTextprice).not.toBe(targetTextprice2);
+console.log('ソート（昇順）後、取得した１件目の金額の値の中身は:', targetTextprice2);
 
-//金額でソート（昇順）
+expect(targetTextprice1).not.toBe(targetTextprice2);
+
+// 金額でソート（降順）
 await page.locator('.col_price_num > a:nth-child(3)').click();
-  await page.waitForTimeout(5000);
-  const targetTextprice3 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_price_num').first().textContent())?.trim();  
+await page.waitForTimeout(1000);
+
+// 1. 監視する要素を定義
+const targetElement2 = page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_price_num');
+// 2. 【重要】更新処理で一瞬消えた要素が、再び画面に現れるのを待つ
+await targetElement2.waitFor({ state: 'visible', timeout: 30000 });
+// 3. テキストが「値1（古い値）」ではなくなるまで待機する
+await expect(targetElement2).not.toHaveText(targetTextprice2, { timeout: 30000 });
+
+const targetTextprice3 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_price_num').first().textContent())?.trim();  
 
   console.log('ソート（降順）後、取得した１件目の金額の値の中身は:', targetTextprice3);
   expect(targetTextprice2).not.toBe(targetTextprice3);
 
   //金額でソートクリア
 await page.getByRole('link', { name: 'ソートのクリア' }).click();
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(1000);
+
+// 1. 監視する要素を定義
+const targetElement3 = page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_price_num');
+// 2. 【重要】更新処理で一瞬消えた要素が、再び画面に現れるのを待つ
+await targetElement3.waitFor({ state: 'visible', timeout: 30000 });
+// 3. テキストが「値1（古い値）」ではなくなるまで待機する
+await expect(targetElement3).not.toHaveText(targetTextprice3, { timeout: 30000 });
+
   const targetTextprice4 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_price_num').first().textContent())?.trim();  
   console.log('ソート（クリア後）取得した１件目の金額の値の中身は:', targetTextprice4);
-  expect(targetTextprice).toBe(targetTextprice4);
+  expect(targetTextprice1).toBe(targetTextprice4);
 
 //内装評価フィルタリング
   const targetTextnaisou1 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_i_value').first().textContent())?.trim();  
@@ -64,7 +86,7 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
 //内装Bでフィルタリング
   await page.locator('select[name="filter_i_value"]').selectOption('B');
   await page.goto('https://devdlpro.proto-dataline.com/aa/aa.php#19c562c6ae4a7ab');
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(1000);
   const targetTextnaisou2 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_i_value').first().textContent())?.trim();  
   console.log('内装「B」フィルタ１件目の値の中身は:', targetTextnaisou2);
 // ▼▼▼ ここに追加：値が「B」であることを確認する ▼▼▼
@@ -72,13 +94,11 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
 
 //内装評価フィルタクリア
   await page.getByRole('link', { name: 'フィルタ解除' }).click();
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(1000);
   const targetTextnaisou3 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_i_value').first().textContent())?.trim();  
   console.log('内装フィルタ解除後、１件目の値の中身は:', targetTextnaisou3);
 // ▼▼▼ ここに追加：値が一致していることを確認する ▼▼▼
   expect(targetTextnaisou3).toBe(targetTextnaisou1);
-
-
 
   //MCフィルタリング
   const targetTextMc1 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_atype_nm.aa_font_size > p').first().textContent())?.trim();  
@@ -88,7 +108,14 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
 await page.locator('select[name="filter_atype_nm"]').selectOption('前');
 await page.goto('https://devdlpro.proto-dataline.com/aa/aa.php#19c5647d3e1d3e5');
 
-await page.waitForTimeout(5000);
+await page.waitForTimeout(1000);
+// 1. 監視する要素を定義
+const targetElementMc1 = page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_atype_nm.aa_font_size > p');
+// 2. 【重要】更新処理で一瞬消えた要素が、再び画面に現れるのを待つ
+await targetElementMc1.waitFor({ state: 'visible', timeout: 30000 });
+// 3. テキストが「値1（古い値）」ではなくなるまで待機する
+await expect(targetElementMc1).not.toHaveText(targetTextMc1, { timeout: 30000 });
+
   const targetTextMc2 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_atype_nm.aa_font_size > p').first().textContent())?.trim();  
   console.log('MC「前」フィルタ１件目の値の中身は:', targetTextMc2);
 // ▼▼▼ ここに追加：値が「前」であることを確認する ▼▼▼
@@ -96,8 +123,16 @@ await page.waitForTimeout(5000);
 
 //MCフィルタ解除
 await page.getByRole('link', { name: 'フィルタ解除' }).click();
-await page.waitForTimeout(5000);
-  const targetTextMc3 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_atype_nm.aa_font_size > p').first().textContent())?.trim();  
+await page.waitForTimeout(1000);
+
+// 1. 監視する要素を定義
+const targetElementMc2 = page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_atype_nm.aa_font_size > p');
+// 2. 【重要】更新処理で一瞬消えた要素が、再び画面に現れるのを待つ
+await targetElementMc2.waitFor({ state: 'visible', timeout: 30000 });
+// 3. テキストが「値1（古い値）」ではなくなるまで待機する
+await expect(targetElementMc2).not.toHaveText(targetTextMc2, { timeout: 30000 });
+
+const targetTextMc3 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_atype_nm.aa_font_size > p').first().textContent())?.trim();  
   console.log('MCフィルタ解除後、１件目の値の中身は:', targetTextMc3);
 // ▼▼▼ ここに追加：値が一致していることを確認する ▼▼▼
   expect(targetTextMc1).toBe(targetTextMc3);
@@ -258,9 +293,9 @@ await expect(page.locator('select[name="car"]')).toBeVisible();
 await page.getByRole('link', { name: '全てクリア' }).click();
 
 // AA相場検索－検索履歴の確認
-await page.waitForTimeout(5000);
+await page.waitForTimeout(3000);
 await page.getByRole('link', { name: '検索履歴' }).first().click({ timeout: 15000 });
-await page.waitForTimeout(5000);
+await page.waitForTimeout(3000);
 
 await expect(page.getByRole('heading', { name: '検索履歴' })).toBeVisible({ timeout: 15000 });
 
@@ -299,16 +334,175 @@ await page.getByRole('link', { name: '選択', exact: true }).first().click();
 //印刷プレビュー表示
 const page2Promise = page.waitForEvent('popup');
   await page.getByRole('link', { name: '印刷' }).click();
-  const page2 = await page1Promise;
+  const page2 = await page2Promise;
 //メーカー・車種で確認
-  await expect(page1.getByRole('cell', { name: '日産' })).toBeVisible();
-await expect(page1.getByText('キューブ')).toBeVisible();
-await page1.getByRole('button', { name: '閉じる' }).click();
+  await expect(page2.getByRole('cell', { name: '日産' })).toBeVisible();
+await expect(page2.getByText('キューブ')).toBeVisible();
+await page2.getByRole('button', { name: '閉じる' }).click();
 //修復歴詳細から通常データに戻る
 await page.getByRole('link', { name: '通常データに戻る' }).click();
 await expect(page.getByRole('link', { name: '修復歴詳細' })).toBeVisible();
 
-// ここまでスキップ　
-// */
+await expect(page.locator('select[name="s_out_kantei_aa"]')).toBeVisible();
+await expect(page.locator('select[name="e_out_kantei_aa"]')).toBeVisible();
+
+// 1. 「詳細を閉じる」ボタンが現在見えているか確認する（true か false が返ります）
+// ※もしボタンが複数ある可能性があるなら .first() をつけておくと安全です
+const isDetailsOpen = await page.getByText('詳細を閉じる').first().isVisible();
+
+// 2. もし見えていなければ（falseなら）、詳細が開いていないので「詳細検索」をクリックする
+if (!isDetailsOpen) {
+  console.log('詳細が開いていないため、ボタンを押します');
+  await page.getByText('詳細検索').click();
+} else {
+  console.log('すでに詳細が開いているため、何もしません');
+}
+
+// label[for="accident"] が修復歴の「不問」です
+await expect(page.locator('label[for="accident"]')).toHaveClass(/checked/);
+//出品画像が「不問」を選択
+await expect(page.locator('tr:nth-child(7) > td:nth-child(6) > .aa_radio > .left')).toBeVisible();
+
+
+
+//全てクリア押下
+await page.getByRole('link', { name: '全てクリア' }).click({ timeout: 30000 });
+await page.waitForTimeout(5000);
+
+//修復歴詳細ボタン押下
+await page.getByRole('link', { name: '修復歴詳細' }).click({ timeout: 30000 });
+//「通常データに戻る」を表示
+await expect(page.getByRole('link', { name: '通常データに戻る' })).toBeVisible({ timeout: 30000 });
+//メーカー・車種選択：日産、キューブ
+await page.locator('select[name="maker"]').selectOption('1015');
+await page.goto('https://devdlpro.proto-dataline.com/aa/aa.php#19c69d1f30f152f7');
+await page.locator('select[name="car"]').selectOption('10152029');
+await page.goto('https://devdlpro.proto-dataline.com/aa/aa.php#19c69d206c0554d');
+//上記条件から検索ボタン押下
+await page.getByText('上記条件から検索').click();
+
+//修復歴詳細＞金額１件目の値を格納
+  const targetTextprice11 = (await page.locator('#result_body_r > table > tbody > tr:nth-child(1) > td.col_price_r.pad_r2').first().textContent())?.trim();  
+  console.log('ソート前、取得した１件目の金額の値の中身は:', targetTextprice11);
+//金額でソート（昇順）
+
+await page.locator('th:nth-child(24) > a').first().click();
+  await page.waitForTimeout(3000);
+  const targetTextprice22 = (await page.locator('#result_body_r > table > tbody > tr:nth-child(1) > td.col_price_r.pad_r2').first().textContent())?.trim();  
+  console.log('ソート（昇順）後、取得した１件目の金額の値の中身は:', targetTextprice22);
+// ▼▼▼ ここに追加：値が一致していない（変更された）ことを確認する ▼▼▼
+expect(targetTextprice11).not.toBe(targetTextprice22);
+
+//金額でソート（降順）
+
+await page.locator('th:nth-child(24) > a:nth-child(3)').click();
+  await page.waitForTimeout(2000);
+  const targetTextprice33 = (await page.locator('#result_body_r > table > tbody > tr:nth-child(1) > td.col_price_r.pad_r2 > b').first().textContent())?.trim();  
+
+  console.log('ソート（降順）後、取得した１件目の金額の値の中身は:', targetTextprice33);
+  expect(targetTextprice22).not.toBe(targetTextprice33);
+
+  //金額でソートクリア
+
+  await page.getByRole('link', { name: 'ソートのクリア' }).click();
+  await page.waitForTimeout(2000);
+  const targetTextprice44 = (await page.locator('#result_body_r > table > tbody > tr:nth-child(1) > td.col_price_r.pad_r2 > b').first().textContent())?.trim();  
+  console.log('ソート（クリア後）取得した１件目の金額の値の中身は:', targetTextprice44);
+  expect(targetTextprice11).toBe(targetTextprice44);
+
+//車体色フィルタリング
+  const targetTextshataishoku1 = (await page.locator('#result_body_r > table > tbody > tr:nth-child(1) > td.col_color_nm_r').first().textContent())?.trim();  
+  console.log('内装フィルタなし1件目の値の中身は:', targetTextshataishoku1);
+
+  //車体色シルバーでフィルタリング
+await page.locator('select[name="filter_color_nm"]').selectOption('シルバー');
+await page.goto('https://devdlpro.proto-dataline.com/aa/aa.php#19c69fa44dc3512');
+await page.waitForTimeout(2000);
+  const targetTextshataishoku2 = (await page.locator('#result_body_r > table > tbody > tr:nth-child(1) > td.col_color_nm_r').first().textContent())?.trim();  
+  console.log('車体色「シルバー」フィルタ１件目の値の中身は:', targetTextshataishoku2);
+// ▼▼▼ ここに追加：値が「シルバー」であることを確認する ▼▼▼
+  expect(targetTextshataishoku2).toBe('シルバー');
+
+//車体色フィルタクリア
+  await page.getByRole('link', { name: 'フィルタ解除' }).click();
+
+// ▼【追加】ターゲットの行が「表示（visible）」されるまで最大30秒待つ
+const targetLocator = page.locator('#result_body_r > table > tbody > tr:nth-child(1) > td.col_color_nm_r').first();
+await targetLocator.waitFor({ state: 'visible', timeout: 30000 });
+
+// targetLocator の中身が targetTextshataishoku1（パール）になるまで、最大30秒間リトライしながら待つ
+await expect(targetLocator).toHaveText(targetTextshataishoku1, { timeout: 30000 });
+
+// ※変数 targetTextshataishoku3 を作る必要はなくなります
+console.log('内装フィルタ解除後、１件目の値の中身は:', targetLocator);
+  
+  //MCフィルタリング
+  const targetTextMc11 = (await page.locator('#result_body_r > table > tbody > tr:nth-child(1) > td.col_atype_nm_r').first().textContent())?.trim();  
+  console.log('MCフィルタなし１件目の値の中身は:', targetTextMc11);
+//MC 前でフィルタリング
+
+await page.locator('select[name="filter_atype_nm"]').selectOption('後');
+await page.goto('https://devdlpro.proto-dataline.com/aa/aa.php#19c6a273af014e68');
+
+await page.waitForTimeout(5000);
+  const targetTextMc22 = (await page.locator('#result_body_r > table > tbody > tr:nth-child(1) > td.col_atype_nm_r').first().textContent())?.trim();  
+  console.log('MC「後」フィルタ１件目の値の中身は:', targetTextMc22);
+// ▼▼▼ ここに追加：値が「後」であることを確認する ▼▼▼
+  expect(targetTextMc22).toBe('後');
+
+//MCフィルタ解除
+await page.getByRole('link', { name: 'フィルタ解除' }).click();
+await page.waitForTimeout(5000);
+  const targetTextMc33 = (await page.locator('#result_body_r > table > tbody > tr:nth-child(1) > td.col_atype_nm_r').first().textContent())?.trim();  
+  console.log('MCフィルタ解除後、１件目の値の中身は:', targetTextMc33);
+// ▼▼▼ ここに追加：値が一致していることを確認する ▼▼▼
+  expect(targetTextMc11).toBe(targetTextMc33);
+
+//検索結果のページング
+await page.getByRole('link', { name: '次へ>>' }).click();
+await expect(page.getByText('件中 51 - 100件')).toBeVisible();
+await page.getByRole('link', { name: '<<前へ' }).click();
+await expect(page.getByText('件中 1 - 50件')).toBeVisible();
+await page.getByRole('link', { name: '2', exact: true }).click();
+await expect(page.getByText('件中 51 - 100件')).toBeVisible();
+await page.getByRole('link', { name: '1', exact: true }).click();
+await expect(page.getByText('件中 1 - 50件')).toBeVisible();
+await page.getByRole('link', { name: '次のページを続けて表示する' }).click();
+await expect(page.getByText('件中 51 - 100件')).toBeVisible();
+await page.getByRole('link', { name: '1', exact: true }).click();
+await expect(page.getByText('件中 1 - 50件')).toBeVisible();
+
+
+
+//外装条件「ポイント」1～99を選択
+await page.locator('select[name="s_out_point"]').selectOption('1');
+await page.locator('select[name="e_out_point"]').selectOption('99');
+//外装条件「レベル」小～小を選択
+await page.locator('select[name="s_level"]').selectOption('1');
+await page.locator('select[name="e_level"]').selectOption('1');
+//「この条件で絞り込む」を押下する
+await page.getByRole('link', { name: 'この条件で絞り込む' }).click();
+//レベルに”小”が選択されていることを確認
+await expect(page.locator('#result_body_r > table > tbody > tr:nth-child(1) > td.col_level_r')).toHaveText('小');
+
+//「クリア」ボタンを押下する
+await page.getByRole('link', { name: 'クリア', exact: true }).click();
+//ポイント項目が空白であることを確認
+await expect(page.locator('#Condition > table > tbody > tr > td:nth-child(3) > select:nth-child(1)')).toHaveValue('');
+//「通常データに戻る」を押下する
+await page.getByRole('link', { name: '通常データに戻る' }).click();
+//修復歴詳細が表示されることを確認
+await page.waitForTimeout(2000);
+await expect(page.getByRole('link', { name: '修復歴詳細' })).toBeVisible();
+//「型式・類別から検索」ボタンを押下する
+await page.getByRole('link', { name: '型式・類別から検索' }).click();
+// グレード検索へ遷移＞完全一致で確認する場合
+await expect(page).toHaveTitle('グレード検索');
+
+//ブラウザバックする⇒自動化ではAA相場を押下する
+await page.getByRole('link', { name: 'AA相場' }).click();
+await page.goto('https://devdlpro.proto-dataline.com/aa/aa.php');
+// AA相場へ遷移＞完全一致で確認する場合
+await expect(page).toHaveTitle('AA相場');
 
 });
