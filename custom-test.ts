@@ -87,7 +87,8 @@ const getReadableName = (prop: string, args: any[]): string => {
   } catch (e) { return '要素'; }
 };
 
-// スクリーンショット撮影の共通処理 (軽量化版)
+// スクリーンショット撮影の共通処理 (軽量化版)修正前
+/*
 const takeScreenshot = async (
   page: Page, 
   testInfo: TestInfo, 
@@ -122,7 +123,52 @@ const takeScreenshot = async (
     console.log('📸 スクショ失敗:', e);
   }
 };
+*/
+// スクリーンショット撮影の共通処理 (軽量化版)修正版
+const takeScreenshot = async (
+  page: Page, 
+  testInfo: TestInfo, 
+  counter: { val: number }, 
+  desc: string, 
+  actionProp: string
+) => {
+  try {
+    // ページが存在しない(null/undefined)場合や、閉じている場合は早期リターン
+    if (!page || page.isClosed()) return;
 
+    if (page.waitForLoadState) await page.waitForLoadState().catch(() => {});
+    if (page.waitForTimeout) await page.waitForTimeout(500);
+    if (page.bringToFront) await page.bringToFront().catch(() => {});
+
+    const safeDesc = desc.replace(/[\\/:*?"<>|]/g, '').substring(0, 150);
+    const fileName = `${String(counter.val).padStart(3, '0')}-${actionProp}__${safeDesc}`;
+
+    if (page.screenshot) {
+      // ★ここが軽量化のポイント！
+      const buffer = await page.screenshot({ 
+        type: 'jpeg', 
+        quality: 50, 
+        scale: 'css' 
+      });
+      
+      await testInfo.attach(fileName, { body: buffer, contentType: 'image/jpeg' });
+      counter.val++;
+    }
+  } catch (e: any) {
+    // ▼▼▼ 修正箇所：エラー内容を判定する ▼▼▼
+
+    // 「ページが閉じている」というエラーの場合は、失敗ログを出さずに終了する
+    if (e.message && e.message.includes('Target page, context or browser has been closed')) {
+      // 必要であればコメントアウトを外してログに出しても良いですが、
+      // テスト結果をきれいにしたい場合は何もしないのがおすすめです。
+      // console.log('⚠️ 画面が閉じられたため、スクショをスキップしました');
+      return;
+    }
+
+    // それ以外の「本当のエラー」の場合だけログに出す
+    console.log('📸 スクショ失敗:', e);
+  }
+};
 const createProxy = (obj: any, testInfo: TestInfo, counter: { val: number }, currentDesc: string = ''): any => {
   return new Proxy(obj, {
     get(target, prop, receiver) {
