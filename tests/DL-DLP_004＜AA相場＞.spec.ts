@@ -1,5 +1,6 @@
-import { test, expect } from '@playwright/test';
-
+//custom-test.tsを使用
+import { test, expect } from '../custom-test';
+//import { test, expect } from '@playwright/test';
 //DLP回帰テスト-AA相場検索-グレード検索＞AA相場検索
 //ログイン画面
 
@@ -84,6 +85,7 @@ const page1Promise = page.waitForEvent('popup');
   const page1 = await page1Promise;
 await expect(page1.getByText('トヨタ', { exact: true })).toBeVisible();
 await expect(page1.getByText('アクア')).toBeVisible();
+await page.waitForTimeout(1000);
 await page1.getByRole('button', { name: '閉じる' }).click();
 
 //カスタマイズ表示　非表示の確認
@@ -94,6 +96,7 @@ await page.locator('.soat_pop_close').click();
 
 // お気に入り登録、削除の確認
 await page.getByRole('link', { name: 'お気に入り' }).click();
+await page.waitForTimeout(1000);
 page.once('dialog', dialog => {
     console.log(`Dialog message: ${dialog.message()}`);
     dialog.dismiss().catch(() => {});
@@ -107,12 +110,11 @@ page.once('dialog', async dialog => {
 });
   // await page.getByRole('link', { name: '削除' }).first().click();
 await page.getByRole('link', { name: '削除' }).first().click();
-await page.waitForTimeout(1000);
-
 await page.locator('#favorite').getByRole('link', { name: 'お気に入り' }).click();
-
 await expect(page.getByRole('cell', { name: 'トヨタ' }).nth(1)).toBeVisible();
 await expect(page.getByRole('cell', { name: 'アクア' }).nth(1)).toBeVisible();
+
+
 await page.waitForTimeout(1000);
 await page.getByRole('link', { name: '全てクリア' }).click({ timeout: 15000 });
 await page.waitForTimeout(1000);
@@ -136,7 +138,7 @@ await expect(page.locator('#Model')).toHaveValue('');
 // AA相場検索－検索履歴の確認
 await page.waitForTimeout(1000);
 await page.getByRole('link', { name: '検索履歴' }).first().click({ timeout: 15000 });
-await page.waitForTimeout(1000);
+
 
 // '登録した検索条件は' という文字が見えるようになるまで待つ（デフォルト30秒）
 await expect(page.getByText('登録した検索条件を')).toBeVisible({ timeout: 30000 });
@@ -339,9 +341,13 @@ await expect(page.getByText('ＡＡ相場 日産_キューブ')).toBeVisible();
 //メモ削除の確認
 await page.locator('#xxx02').getByRole('link', { name: '×' }).click();
 await expect(page.getByText('ＡＡ相場 日産_キューブ')).not.toBeVisible();
+await page.waitForTimeout(3000);
 
 //グラフの確認
 await page.getByRole('link', { name: 'グラフ' }).click();
+// 「クロス集計」という文字が見えるようになるまで待つ（最大30秒）
+await page.waitForTimeout(3000);
+await expect(page.getByText('クロス集計')).toBeVisible({ timeout: 30000 });
 await expect(page.locator('iframe[name^="fancybox-frame"]').contentFrame().getByRole('link', { name: 'クロス集計' })).toBeVisible({ timeout: 15000 });
 await expect(page.locator('iframe[name^="fancybox-frame"]').contentFrame().locator('#aac-ct').contentFrame().getByRole('cell', { name: 'ヒット数に対する比率(％)：' })).toBeVisible();
 //グラフの確認　AA落札率、卸売基準価格、クロス集計のタブを押下して内容が表示されること
@@ -366,6 +372,7 @@ const page2Promise = page.waitForEvent('popup');
 await expect(page2.getByRole('cell', { name: '日産' })).toBeVisible();
 await page2.getByText('キューブ').click();
 await expect(page2.getByRole('cell', { name: 'ヒット数に対する比率(％)：' })).toBeVisible();
+await page.waitForTimeout(1000);
 await page2.getByRole('button', { name: '閉じる' }).click();
 await page.locator('#fancybox-close').click();
 
@@ -503,7 +510,9 @@ const page3Promise = page.waitForEvent('popup');
 //メーカー・車種で確認
 await expect(page3.getByRole('cell', { name: '日産' })).toBeVisible();
 await expect(page3.getByText('キューブ')).toBeVisible();
+await page.waitForTimeout(1000);
 await page3.getByRole('button', { name: '閉じる' }).click();
+
 //修復歴詳細から通常データに戻る
 await page.getByRole('link', { name: '通常データに戻る' }).click();
 await expect(page.getByRole('link', { name: '修復歴詳細' })).toBeVisible();
