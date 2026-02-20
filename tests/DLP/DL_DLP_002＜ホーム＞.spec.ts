@@ -1,6 +1,5 @@
 import { test, expect } from '../../custom-test';
 
-
 test('ホーム', async({page, context})=> {
   await page.goto('https://devdlpro.proto-dataline.com/');
 
