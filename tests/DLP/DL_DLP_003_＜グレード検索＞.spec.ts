@@ -2,13 +2,12 @@ import { test, expect } from  '../../custom-test';
 
 test('グレード検索', async({page, context})=> {
   test.setTimeout(300000);
-  await page.goto('https://stgdlpro.proto-dataline.com/');
 
+  await page.goto('https://stgdlpro.proto-dataline.com/');
+    await page.waitForTimeout(2000);
   await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0001');
   await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0001');
-  
-  await page.waitForTimeout(2000);
-
+    await page.waitForTimeout(2000);
   await page.getByRole('button', { name: 'ログイン' }).click();
   await expect.soft(page).toHaveURL('https://stgdlpro.proto-dataline.com/top/top.php'); 
 
@@ -441,52 +440,44 @@ await expect(page.getByRole('cell', { name: '販売年月' })).not.toBeVisible()
    const gradesearch3 = (await page.locator('#result_body > table > tbody > tr:nth-child(1) > td.col_g_grade').first().textContent())?.trim();  
    console.log('gradesearch3のグレードは:', gradesearch3); 
    await page.waitForTimeout(1000);
-
    // 1. テキストを取得
-  const text1 = await page.locator('#paging > span.sum').textContent();
-
+  let  text = await page.locator('#paging > span.sum').textContent();
   // 2. 変数の中に「50」が含まれているか検証
-  expect(text1).toContain(' 件中 1 -');
-
+  console.log('表示中の検索結果件数は:', text); 
+  expect(text).toContain(' 件中 1 -');
 //No.90
    await page.getByRole('link', { name: '次へ>>' }).click();
-
+   await page.waitForTimeout(3000);
+   // 1. テキストを取得
+  text = await page.locator('#paging > span.sum').textContent();
+  // 2. 変数の中に「50」が含まれているか検証
+  console.log('表示中の検索結果件数は:', text); 
+  expect(text).toContain('件中 51 -');
+//No.91
+  await page.getByRole('link', { name: '<<前へ' }).click();
    await page.waitForTimeout(3000);
 
    // 1. テキストを取得
-  const text2 = await page.locator('#paging > span.sum').textContent();
-
-  // 2. 変数の中に「50」が含まれているか検証
-  expect(text2).toContain('件中 51 -');
-   
-//No.91
-  await page.getByRole('link', { name: '<<前へ' }).click();
-   await page.waitForTimeout(4000);
-
-   // 1. テキストを取得
-  const text3 = await page.locator('#paging > span.sum').textContent();
-
+  text = await page.locator('#paging > span.sum').textContent();
   // 2. 変数の中に「1」が含まれているか検証
-  expect(text3).toContain(' 件中 1 -');
-
-//No.92
+   console.log('表示中の検索結果件数は:', text); 
+   expect(text).toContain(' 件中 1 -');
+  //No.92
   await page.getByRole('link', { name: '2' }).click();
-  await page.waitForTimeout(4000);
+  await page.waitForTimeout(3000);
 
    // 1. テキストを取得
-  const text4 = await page.locator('#paging > span.sum').textContent();
-
+  text = await page.locator('#paging > span.sum').textContent();
   // 2. 変数の中に「51」が含まれているか検証
-  expect(text4).toContain('件中 51 -');
-
+  console.log('表示中の履歴件数は:', text); 
+  expect(text).toContain('件中 51 -');
+ 
 //No.93
   await page.getByRole('link', { name: '▲' }).nth(3).click();
     await page.waitForTimeout(3000);
   await expect(page.locator('#result_body')).toContainText('Ｆ');
 
-  
   //await expect.soft(page.locator('thead')).not.toContainText('1');
-
   //await expect.soft(page.getByText('1', { exact: true })).not.toBeVisible();
 
   await expect(page.getByText('1', { exact: true })).toBeVisible();
@@ -571,8 +562,8 @@ await expect(page.getByRole('cell', { name: '販売年月' })).not.toBeVisible()
 //No.117
 await expect(page.getByRole('list')).toContainText('全 200 件中 1 - 50件');
    // 1. テキストを取得
-  let text = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
-   console.log('表示中の件数は:', text); 
+  text = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
+   console.log('表示中の履歴件数は:', text); 
   // 2. 変数の中に「1」が含まれているか検証
   expect(text).toContain(' 件中 1 -');
 
@@ -582,7 +573,7 @@ await expect(page.getByRole('list')).toContainText('全 200 件中 1 - 50件');
   //遷移後、一行目”No”が「51」になるまでまつ
   await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(1)').first()).toHaveText('51')
   text = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
-   console.log('表示中の件数は:', text); 
+  console.log('表示中の履歴件数は:', text); 
   // 2. 変数の中に「1」が含まれているか検証
   expect(text).toContain(' 件中 51 -');
 
@@ -593,7 +584,7 @@ await expect(page.getByRole('list')).toContainText('全 200 件中 1 - 50件');
   await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(1)').first()).toHaveText('1')
    // 1. テキストを取得
   text = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
-   console.log('表示中の件数は:', text); 
+   console.log('表示中の履歴件数は:', text); 
   // 2. 変数の中に「1」が含まれているか検証
   expect(text).toContain(' 件中 1 -');
 
@@ -603,7 +594,7 @@ await expect(page.getByRole('list')).toContainText('全 200 件中 1 - 50件');
   //遷移後、一行目”No”が「51」になるまでまつ
   await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(1)').first()).toHaveText('51')
   text = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
-   console.log('表示中の件数は:', text); 
+  console.log('表示中の履歴件数は:', text); 
   // 2. 変数の中に「1」が含まれているか検証
   expect(text).toContain(' 件中 51 -');
 //No.121
@@ -613,7 +604,7 @@ await expect(page.getByRole('list')).toContainText('全 200 件中 1 - 50件');
   await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(1)').first()).toHaveText('1')
    // 1. テキストを取得
   text = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
-   console.log('表示中の件数は:', text); 
+  console.log('表示中の履歴件数は:', text); 
   // 2. 変数の中に「1」が含まれているか検証
   expect(text).toContain(' 件中 1 -');
 //No.122
