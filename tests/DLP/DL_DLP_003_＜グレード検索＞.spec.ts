@@ -498,7 +498,7 @@ await expect(page.getByRole('cell', { name: '販売年月' })).not.toBeVisible()
   await page.getByRole('link', { name: 'ソートのクリア' }).click();
   await page.waitForTimeout(1000);
   await expect(page.getByText('1', { exact: true })).not.toBeVisible();
-   await expect(page.locator('#result_head').getByText('2', { exact: true })).not.toBeVisible();
+  await expect(page.locator('#result_head').getByText('2', { exact: true })).not.toBeVisible();
 //No.97
   await page.getByRole('link', { name: '買取' }).first().click();
   await page.waitForTimeout(1000);
