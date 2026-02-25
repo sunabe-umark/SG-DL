@@ -23,6 +23,9 @@ test('test', async ({ page }) => {
   await page.getByRole('link', { name: 'ＡＡ相場' }).click();
   await page.waitForLoadState('networkidle');
   
+  // AA相場へ遷移＞タブ名完全一致で確認する場合
+  await expect(page).toHaveTitle('AA相場');
+
   // メーカー「トヨタ」を選択
   const makerSelect = page.locator('select').first();
   await makerSelect.selectOption({ label: 'トヨタ' });
@@ -114,7 +117,7 @@ await page.locator('#favorite').getByRole('link', { name: 'お気に入り' }).c
 await expect(page.getByRole('cell', { name: 'トヨタ' }).nth(1)).toBeVisible();
 await expect(page.getByRole('cell', { name: 'アクア' }).nth(1)).toBeVisible();
 
-
+//全てクリアを押下する
 await page.waitForTimeout(1000);
 await page.getByRole('link', { name: '全てクリア' }).click({ timeout: 15000 });
 await page.waitForTimeout(1000);
@@ -345,9 +348,7 @@ await page.waitForTimeout(3000);
 
 //グラフの確認
 await page.getByRole('link', { name: 'グラフ' }).click();
-// 「クロス集計」という文字が見えるようになるまで待つ（最大30秒）
-await page.waitForTimeout(3000);
-await expect(page.getByText('クロス集計')).toBeVisible({ timeout: 30000 });
+await page.waitForTimeout(5000);
 await expect(page.locator('iframe[name^="fancybox-frame"]').contentFrame().getByRole('link', { name: 'クロス集計' })).toBeVisible({ timeout: 15000 });
 await expect(page.locator('iframe[name^="fancybox-frame"]').contentFrame().locator('#aac-ct').contentFrame().getByRole('cell', { name: 'ヒット数に対する比率(％)：' })).toBeVisible();
 //グラフの確認　AA落札率、卸売基準価格、クロス集計のタブを押下して内容が表示されること
