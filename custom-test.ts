@@ -13,6 +13,7 @@ const ACTION_MAP: Record<string, string> = {
   press: 'キーを押す',
   setInputFiles: 'ファイルをアップロード',
   goto: 'ページを開く',
+  waitFor: 'を確認'
 };
 
 // 🔍 監視対象のメソッド
@@ -187,6 +188,13 @@ const createProxy = (obj: any, testInfo: TestInfo, counter: { val: number }, cur
           if (prop === 'fill') extraInfo = `「${args[0]}」`;
           if (prop === 'selectOption') extraInfo = `「${args[0]}」`;
           if (prop === 'goto') extraInfo = `「${args[0]}」`;
+
+          // ▼▼▼ ここから追加 ▼▼▼
+          if (prop === 'waitFor') {
+            const state = args[0]?.state || 'visible'; // 指定がない場合は visible(表示) 扱い
+            extraInfo = state === 'hidden' ? 'が消えること' : 'が表示されること';
+          }
+          // ▲▲▲ ここまで追加 ▲▲▲
 
           let subject = currentDesc || (prop === 'goto' ? '' : '画面');
           const actionName = ACTION_MAP[prop];
