@@ -1,7 +1,7 @@
 import { test, expect } from '../custom-test';
 
 test('小売相場', async({page, context}, testInfo)=> {
-  test.setTimeout(200000);
+  test.setTimeout(240000);
 
   await page.goto('https://devdlpro.proto-dataline.com/');
   await page.waitForTimeout(2000);
@@ -144,6 +144,8 @@ await page.getByText('無').nth(1).click();
   await expect.soft(page.locator('[id="0901446A20250604T006"]')).toContainText('Ｓ');
 
 //カスタマイズの設定を実施
+  await page.getByText('カスタマイズ').click();
+  await page.waitForTimeout(2000);
 /*特定の項目名でis-offを持っている項目名があるかを確認する方法いったんコメントアウト
 // 「is-off クラスを持っている、排気の項目」をピンポイントで指定
 const offToggle = page.locator('span.is-off[data-soatitem="col_exhaust_nm"]');
@@ -183,7 +185,6 @@ if (isOn2) {
   console.log('ドアは現在は OFF です');
 }
 特定の項目名でis-offを持っている項目名があるかを確認する方法いったんコメントアウトここまで*/
-/*
   const exhaust_toggle = page.locator('span[data-soatitem="col_exhaust_nm"]');
 // 現在の状態を確認
   const exhaust_isOff = await exhaust_toggle.evaluate(el => el.classList.contains('is-off'));
@@ -410,8 +411,7 @@ await page.waitForTimeout(2000);
   await page.waitForTimeout(2000);
 //No.62
   await page.getByText('上記条件から検索 ').click();
-/*
-  //No.63
+ //No.63
   await page.locator('.col_total_price > a').first().click();
 
 //支払い総額＞金額１件目の値を格納
@@ -523,7 +523,8 @@ expect(text4).toContain('キューブ');
 await page.locator('#xxx02').click();
     await page.waitForTimeout(3000);
 await expect(page.locator('div').filter({ hasText: '小売相場 日産_1千km〜200千km_キューブ_0〜' }).nth(3)).not.toBeVisible();
-//No.77*/
+//No.77
+
  await page.getByRole('link', { name: 'グラフ' }).click();
  await page.waitForTimeout(5000);
 //  const myFrame = page.frameLocator('#fancybox-frame');
@@ -554,25 +555,56 @@ await expect(page.locator('div').filter({ hasText: '小売相場 日産_1千km�
 //  await expect(page.locator('iframe[name^="fancybox-frame"]').contentFrame().locator('#aac-ct').contentFrame().getByRole('cell', { name: 'ヒット数に対する比率(％)：' })).toBeVisible();
   await expect.soft(page.locator('iframe[id="fancybox-frame"]').contentFrame().getByRole('rowheader', { name: '定番設定' })).toBeVisible();
 //No.81
-
+  await page.locator('iframe[id="fancybox-frame"]').contentFrame().locator('#rc-ct-yaxis').selectOption('grade');
+  await page.waitForTimeout(3000);
+  await page.locator('iframe[id="fancybox-frame"]').contentFrame().locator('#rc-ct-show-btn').click();
+  await page.waitForTimeout(3000);
+  await expect(page.locator('iframe[id="fancybox-frame"]').contentFrame().locator('#rc-ct-yaxis-title')).toContainText('グレ｜ド');
 //No.82
-
+  await page.locator('iframe[id="fancybox-frame"]').contentFrame().locator('#rc-ct-xaxis').selectOption('color');
+  await page.waitForTimeout(3000);
+  await page.locator('iframe[id="fancybox-frame"]').contentFrame().locator('#rc-ct-show-btn').click();
+  await page.waitForTimeout(3000);
+  await expect(page.locator('iframe[id="fancybox-frame"]').contentFrame().locator('#rc-ct-xaxis-title')).toContainText('カラー');
 //No.83
-
-//No.83
-
+  await page.locator('iframe[id="fancybox-frame"]').contentFrame().locator('#rc-ct-show-btn').click();
+  await page.waitForTimeout(3000);
+  const page2Promise = page.waitForEvent('popup');
+  await page.locator('iframe[id="fancybox-frame"]').contentFrame().getByRole('link', { name: '印刷' }).click();
+  const page2 = await page2Promise;
 //No.84
-
+  await page2.getByRole('button', { name: '閉じる' }).click();
+  await page.waitForTimeout(3000);
 //No.85
-
-//No.86
-
+  await page.waitForTimeout(3000);
+  await page.locator('#fancybox-close').click({ force: true });
+  await page.waitForTimeout(3000);
+  
+  //No.86
+  await page.getByRole('link', { name: '相場 分析' }).click();
+  await page.waitForTimeout(3000);
+  await expect.soft(page).toHaveURL(/.*stock.php/); 
+  await expect(page).toHaveTitle('仕入リサーチ');
 //No.87
-
+  // オプション：ページ遷移が完了するまで待機する場合
+  await page.goBack({ waitUntil: 'networkidle' });
+  await page.waitForTimeout(3000);
+  await expect.soft(page).toHaveURL(/.*retail.php/); 
+  await expect(page).toHaveTitle('小売相場'); 
+//画面のリロード
+  await page.reload();
 //No.88
-
+  await page.getByRole('link', { name: 'ＡＡ 相場' }).click();
+  await page.waitForTimeout(3000);
+  await expect.soft(page).toHaveURL(/.*aa.php/); 
+  await expect(page).toHaveTitle('AA相場');
 //No.89
-
+  await page.goBack({ waitUntil: 'networkidle' });
+  await page.waitForTimeout(3000);
+  await expect.soft(page).toHaveURL(/.*retail.php/); 
+  await expect(page).toHaveTitle('小売相場'); 
+  //画面のリロード
+  await page.reload();
 //No.90
 
 //No.91
@@ -580,8 +612,17 @@ await expect(page.locator('div').filter({ hasText: '小売相場 日産_1千km�
 //No.92
 
 //No.93
-
+  await page.getByRole('link', { name: '型式・類別から検索' }).click();
+  await page.waitForTimeout(3000);
+  await expect.soft(page).toHaveURL(/.*grade.php/); 
+  await expect(page).toHaveTitle('グレード検索'); 
 //No.94
+  await page.goBack({ waitUntil: 'networkidle' });
+  await page.waitForTimeout(3000);
+  await expect.soft(page).toHaveURL(/.*retail.php/); 
+  await expect(page).toHaveTitle('小売相場'); 
+//画面のリロード
+  await page.reload();
 
   console.log('最後まで完了');  
 });
