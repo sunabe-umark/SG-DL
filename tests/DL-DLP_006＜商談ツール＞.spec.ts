@@ -19,10 +19,13 @@ test('test', async ({ page }) => {
   await page.getByRole('button', { name: 'ログイン' }).click();
   await page.waitForLoadState('networkidle');
   
-  // アイコン「商談ツール」を押下
+// アイコン「商談ツール」を押下
   await page.getByRole('link', { name: '商談ツール' }).click();
   await page.waitForLoadState('networkidle');
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(1000);
+
+// 商談ツールへ遷移＞タブ名完全一致で確認する場合
+  await expect(page).toHaveTitle('買取・下取');
 
 // メーカー「トヨタ」を選択
 const makerSelect = page.locator('select').first();
@@ -145,7 +148,7 @@ await page.waitForTimeout(3000);
   await page.goto('https://devdlpro.proto-dataline.com/tradein_biz/tradein_biz.php#19c74720de512604');
 // 「検索」押下
   await page.getByRole('link', { name: '検 索' }).click();
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(3000);
 
   // 検索結果一覧＞「グレード」＞2.5Sと一致確認
  await expect(page.getByRole('cell', { name: /２．５Ｓ/ }).nth(1)).toBeVisible();
@@ -198,6 +201,9 @@ await expect(page.locator('li.vehicle_tab01aon')).toContainText('車両情報');
 await expect(page.getByRole('cell', { name: 'アルファード', exact: true })).toBeVisible();
 //グレードを確認
 await expect(page.locator('.vehicle_box01 > table > tbody > tr:nth-child(2) > td').first()).toBeVisible();
+
+await page.waitForTimeout(3000);
+
 //買取・下取価格タブを押下
 await page.getByRole('link', { name: '仕入価格' }).click();
 // 買取・下取価格タブへ遷移
