@@ -23,6 +23,9 @@ test('test', async ({ page }) => {
   await page.getByRole('link', { name: 'ＡＡ相場' }).click();
   await page.waitForLoadState('networkidle');
   
+  // AA相場へ遷移＞タブ名完全一致で確認する場合
+  await expect(page).toHaveTitle('AA相場');
+
   // メーカー「トヨタ」を選択
   const makerSelect = page.locator('select').first();
   await makerSelect.selectOption({ label: 'トヨタ' });
