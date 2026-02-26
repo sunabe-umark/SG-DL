@@ -1,4 +1,4 @@
-import { test, expect } from  '../../custom-test';
+import { test, expect } from  '../custom-test';
 
 test('グレード検索', async({page, context})=> {
   test.setTimeout(300000);

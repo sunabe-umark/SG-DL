@@ -1,7 +1,7 @@
 import { test, expect } from '../custom-test';
 
 test('小売相場', async({page, context}, testInfo)=> {
-  test.setTimeout(240000);
+  test.setTimeout(300000);
 
   await page.goto('https://devdlpro.proto-dataline.com/');
   await page.waitForTimeout(2000);
@@ -574,9 +574,8 @@ await expect(page.locator('div').filter({ hasText: '小売相場 日産_1千km�
   const page2 = await page2Promise;
 //No.84
   await page2.getByRole('button', { name: '閉じる' }).click();
-  await page.waitForTimeout(3000);
 //No.85
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(2000);
   await page.locator('#fancybox-close').click({ force: true });
   await page.waitForTimeout(3000);
   

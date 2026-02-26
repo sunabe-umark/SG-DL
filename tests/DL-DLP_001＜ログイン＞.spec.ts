@@ -1,4 +1,4 @@
-import { test, expect } from  '../../custom-test';
+import { test, expect } from  '../custom-test';
 test('ログイン@console', async ({ page }, testInfo) => {
   
   await page.goto('https://devdlpro.proto-dataline.com/');
