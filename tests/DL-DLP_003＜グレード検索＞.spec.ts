@@ -469,7 +469,7 @@ await expect(page.getByRole('cell', { name: '販売年月' })).not.toBeVisible()
    // 1. テキストを取得
   text = await page.locator('#paging > span.sum').textContent();
   // 2. 変数の中に「51」が含まれているか検証
-  console.log('表示中の履歴件数は:', text); 
+  console.log('表示中の検索結果件数は:', text); 
   expect(text).toContain('件中 51 -');
  
 //No.93
@@ -509,7 +509,7 @@ await expect(page.getByRole('cell', { name: '販売年月' })).not.toBeVisible()
   await expect(page.locator('#result_body > table > tbody > tr:nth-child(1) > td.col_g_grade')).toHaveText(gradesearch3!);
 //No.100
   //ブラウザバック
-   await page.goBack(); 
+  await page.goBack(); 
    await page.waitForTimeout(1000);
 //No.101
   await expect.soft(page).toHaveURL(/.*grade.php/); 
@@ -519,8 +519,8 @@ await expect(page.getByRole('cell', { name: '販売年月' })).not.toBeVisible()
 //No.103 
   await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(4)')).toHaveText('10656');
  //No.104
-   await page.locator('#search_type_btn').click();
-   await page.waitForTimeout(1000);  
+  await page.locator('#search_type_btn').click();
+  await page.waitForTimeout(1000);  
 //No.105
   await page.locator('#tusyo_katashiki').click();
   await page.locator('#tusyo_katashiki').fill('AZK10BEXQB');
@@ -536,14 +536,13 @@ await expect(page.getByRole('cell', { name: '販売年月' })).not.toBeVisible()
   await expect(page.getByRole('cell', { name: 'Ｓ' }).nth(1)).toBeVisible();
 //No.110
   await page.getByRole('link', { name: '注文' }).nth(1).click();
-  await page.waitForTimeout(1000);
- await expect.soft(page).toHaveURL(/.*stock_biz.php/); 
+   await page.waitForTimeout(1000);
+  await expect.soft(page).toHaveURL(/.*stock_biz.php/); 
 //No.111
  await expect(page).toHaveTitle('注文販売');
 //No.112
    const gradesearch4 = (await page.locator('#result_body > table > tbody > tr:nth-child(1) > td.col_sb_grade').first().textContent())?.trim();  
-  
-   console.log('gradesearch2のグレードは:', gradesearch4);
+    console.log('gradesearch2のグレードは:', gradesearch4);
 
 //No.113
   //ブラウザバック
@@ -557,8 +556,7 @@ await expect(page.getByRole('cell', { name: '販売年月' })).not.toBeVisible()
   await page.getByRole('link', { name: '検索履歴' }).click();
   await expect(page.getByRole('heading')).toContainText('検索履歴');
 //No.116
-  await expect(page.locator('#list_history')).toContainText('AZK10BEXQB');//No.116
-
+  await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(8)')).toHaveText('AZK10BEXQB');
 //No.117
 await expect(page.getByRole('list')).toContainText('全 200 件中 1 - 50件');
    // 1. テキストを取得

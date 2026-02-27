@@ -254,8 +254,8 @@ const door_isOff = await door_toggle.evaluate(el => el.classList.contains('is-of
 //No.49 
   await page.locator('#favorite').getByRole('link', { name: 'お気に入り' }).click();
   await page.waitForTimeout(3000);
-  await expect(page.locator('#list_favorite')).toContainText('トヨタ');
-  await expect(page.locator('#list_favorite')).toContainText('アクア');
+  await expect(page.locator('#list_favorite > table > tbody > tr:nth-child(2) > td:nth-child(3)')).toHaveText('トヨタ');
+  await expect(page.locator('#list_favorite > table > tbody > tr:nth-child(2) > td:nth-child(4)')).toHaveText('アクア');
 
    // await page.getByText('設定を保存').click();//失敗して止める用
 //No.50
@@ -314,7 +314,6 @@ const mm = String(now.getMonth() + 1).padStart(2, '0'); // 月は0から始ま�
 const dd = String(now.getDate()).padStart(2, '0');
 
 const todayDate = `${yyyy}/${mm}/${dd}`; // 例: "20260220"
-
 // ② その日付のテキストが画面上に「表示されている（Visible）」か確認する
 //await expect(page.getByText(todayDate)).toBeVisible(); 
   
@@ -327,11 +326,11 @@ const todayDate = `${yyyy}/${mm}/${dd}`; // 例: "20260220"
   console.log('履歴の一番目は:', text);  
   expect.soft(text).toContain(todayDate);
 
-  await expect(page.locator('#list_history')).toContainText('トヨタ');
-  await expect(page.locator('#list_history')).toContainText('アクア');
-
+   await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(4)')).toHaveText('トヨタ');
+   await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(5)')).toHaveText('アクア');
 //No.56
-  await page.getByRole('link', { name: '選択' }).nth(3).click({ delay: 150 });
+
+await page.getByRole('link', { name: '選択' }).nth(3).click({ delay: 150 });
   await page.waitForTimeout(3000);
   //makerSelect = page.locator('select#s1');
   await expect(makerSelect).not.toHaveValue('');
@@ -352,7 +351,7 @@ const todayDate = `${yyyy}/${mm}/${dd}`; // 例: "20260220"
   await page.waitForTimeout(5000);
   await expect.soft(page.getByRole('heading', { name: '検索履歴' })).toBeVisible(); 
   //await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(1)').first()).toHaveText('51')
-   // 1. テキストを取得
+  // 1. テキストを取得
   let text2 = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
    console.log('表示中の履歴件数は:', text2); 
   // 2. 変数の中に「1」が含まれているか検証
