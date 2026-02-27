@@ -262,7 +262,7 @@ test('test', async ({ page }) => {
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(500);
 
-    //商談設定＞走行加減算設定＞空白
+  //商談設定＞走行加減算設定＞空白
   await page.getByRole('link', { name: '商談設定' }).click();
   await page.waitForTimeout(1000);
    await page.getByRole('link', { name: '走行加減算設定' }).click();
@@ -582,6 +582,22 @@ test('test', async ({ page }) => {
   // 2. 計算結果をコンソール（ターミナル）に出力して確認する
   console.log('注文販売　走行距離-1000km加算：空白と999の差の価格はプラス値となる:', diffPrice);
 
+  //商談設定＞走行加減算設定＞元の空白に戻す
+  await page.getByRole('link', { name: '商談設定' }).click();
+  await page.waitForTimeout(1000);
+   await page.getByRole('link', { name: '走行加減算設定' }).click();
+  // name属性が "shitadori_distance_over" のinputタグを探して、中身を空っぽ（クリア）にする
+  await page.locator('input[name="shitadori_distance_over"]').clear();
+  // name属性が "shitadori_distance_short" のinputタグを探して、中身を空っぽ（クリア）にする
+  await page.locator('input[name="shitadori_distance_short"]').clear();
+  // name属性が "stock_distance_over" のinputタグを探して、中身を空っぽ（クリア）にする
+  await page.locator('input[name="stock_distance_over"]').clear();
+  // name属性が "stock_distance_short" のinputタグを探して、中身を空っぽ（クリア）にする
+  await page.locator('input[name="stock_distance_short"]').clear();
+  // この内容で登録する
+  await page.getByRole('link', { name: 'この内容で登録する' }).click();
+  console.log('商談設定＞走行加減算設定＞乗用車＞空白に設定');
+
   // アイコン「商談ツール」を押下
   await page.getByRole('link', { name: '商談ツール' }).click();
   await page.waitForTimeout(500);
@@ -682,5 +698,6 @@ test('test', async ({ page }) => {
   await page.waitForTimeout(1000);
 
   await page.keyboard.press('Home');
+
 
 });
