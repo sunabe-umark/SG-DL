@@ -406,7 +406,7 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
   await page.locator('select[name="sel_syaken_year"]').selectOption(year2);
     await page.waitForTimeout(2000);
 //No.49
-  const mm2 = String(now.getMonth() + 1);
+  const mm2 = String(now.getMonth() + 1);//1~9月を１桁格納する
   console.log(`選択する月: ${mm2}月`);
   await page.locator('select[name="sel_syaken_month"]').selectOption(mm2);
     await page.waitForTimeout(2000);
