@@ -173,7 +173,7 @@ await page.waitForTimeout(2000);
 await page.getByRole('textbox', { name: 'グレード' }).click();
 await page.waitForTimeout(3000);
 await page.getByRole('treeitem', { name: 'Ｓ', exact: true }).click();
-await page.waitForTimeout(2000);
+await page.waitForTimeout(3000);
 await page.getByRole('textbox', { name: '年式' }).click();
 await page.waitForTimeout(3000);
 await page.getByRole('treeitem', { name: '(H29)' }).click();

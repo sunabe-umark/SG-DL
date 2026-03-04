@@ -130,7 +130,7 @@ test('注文販売', async ({ page }, testInfo) => {
     await page.waitForTimeout(2000);
   await expect(page.getByRole('heading', { name: '検索履歴' })).toBeVisible();
 //No.26
-// ① 今日の日付を YYYYMMDD 形式で作成する
+//  今日の日付を YYYYMMDD 形式で作成する
   const now = new Date();
   const yyyy = now.getFullYear();
   const mm = String(now.getMonth() + 1).padStart(2, '0'); // 月は0から始まるので+1
@@ -396,8 +396,7 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
 // 🚨 fill() は「文字列」しか受け付けない仕様です！
 // そのため、数値を入力したい場合は .toString() をつけて文字に変換してあげます
   await page.locator('input[name="txt_kyori"]').fill(total.toString());
-//No.48
-//プルダウンの value 属性に合わせて文字列（String）に変換する
+//No.48 プルダウンの value 属性に合わせて文字列（String）に変換する
   const year1 = yyyy + 1
 //今年の一年後の数字を文字列に変換する
   const year2 = year1.toString();
@@ -461,7 +460,7 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
   await page.locator('textarea[name="txt_tokki"]').click();
   await page.locator('textarea[name="txt_tokki"]').fill('テスト注文販売');
     await page.waitForTimeout(1000);
-//No.57
+//No.56
 //注文販売参考価格＞計算前の価格を取得
   // 1. 注文販売参考価格の金額が表示されている要素を指定する（※実際のセレクターに変更してください）
   const locatorC = page.locator('#vehicle_price > table > tbody > tr > td'); 
