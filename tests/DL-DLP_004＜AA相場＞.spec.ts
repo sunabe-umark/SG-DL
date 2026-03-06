@@ -86,16 +86,134 @@ await expect(page.getByRole('cell', { name: 'Ｓ' }).nth(1)).toBeVisible({ timeo
 const page1Promise = page.waitForEvent('popup');
   await page.getByRole('link', { name: '印刷' }).click();
   const page1 = await page1Promise;
+// 🌟 ここで page1 の画面サイズを 横1280px × 縦1200px に強制変更する！
+await page1.setViewportSize({ width: 1280, height: 800 });
+
 await expect(page1.getByText('トヨタ', { exact: true })).toBeVisible();
 await expect(page1.getByText('アクア')).toBeVisible();
 await page.waitForTimeout(1000);
 await page1.getByRole('button', { name: '閉じる' }).click();
 
-//カスタマイズ表示　非表示の確認
+//カスタマイズ表示　非表示の確認＞ダイアログを表示＞並べ替え前
 await page.getByText('カスタマイズ').click({ timeout: 15000 });
+// 🌟 ドラッグ＆ドロップ後、リストの1番目（spanタグ）に「燃料」という文字が含まれていることを確認する！
+await expect(
+  page.locator('#ResultArea > div.c-soat_pop.js_soat_pop > div.soat_pop_inner > div.soat_pop_content > ul > li:nth-child(1) > span')
+).toContainText('排気');
+//カスタマイズ＞排気が表示となっていることを確認
 await expect(page.locator('._btn').first()).toBeVisible();
+//カスタマイズ＞ドアが非表示となっていることを確認
 await expect(page.locator('._btn.js_soat_switch.is-off')).toBeVisible();
+//カスタマイズ表示　非表示の確認＞ダイアログを閉じる
 await page.locator('.soat_pop_close').click();
+
+//排気を右隣の燃料へ項目並べ替え
+// 1. ドラッグする要素（掴むもの：排気）
+let source = page.locator('#c-sortable > div.item.col_exhaust_name');
+// 2. ドロップする目標地点（落とす場所：燃料）
+let target = page.locator('#c-sortable > div.item.col_fuel_text');
+// 🌟 source を target の位置までドラッグ＆ドロップする最強の1行！
+await source.dragTo(target);
+
+// 現在開いている画面（page）をリロード更新する！
+await page.reload();
+
+//カスタマイズ表示　非表示の確認＞ダイアログを表示＞並べ替え後
+await page.getByText('カスタマイズ').click({ timeout: 15000 });
+// 🌟 ドラッグ＆ドロップ後、リストの1番目（spanタグ）に「燃料」という文字が含まれていることを確認する！
+await expect(
+  page.locator('#ResultArea > div.c-soat_pop.js_soat_pop > div.soat_pop_inner > div.soat_pop_content > ul > li:nth-child(1) > span')
+).toContainText('燃料');
+//カスタマイズ＞排気が表示となっていることを確認
+await expect(page.locator('._btn').first()).toBeVisible();
+//カスタマイズ表示　非表示の確認＞ダイアログを閉じる
+await page.locator('.soat_pop_close').click();
+
+//排気を左隣の燃料へ項目並べ替え戻す
+// 1. ドラッグする要素（掴むもの：排気量）
+source = page.locator('#c-sortable > div.item.col_fuel_text');
+// 2. ドロップする目標地点（落とす場所：燃料）
+target = page.locator('#c-sortable > div.item.col_exhaust_name');
+// 🌟 source を target の位置までドラッグ＆ドロップする最強の1行！
+await source.dragTo(target);
+
+// 現在開いている画面（page）をリロード更新する！
+await page.reload();
+
+//カスタマイズ表示　非表示の確認＞ダイアログを表示＞並べ替えを元に戻した後
+await page.getByText('カスタマイズ').click({ timeout: 15000 });
+// 🌟 ドラッグ＆ドロップ後、リストの1番目（spanタグ）に「燃料」という文字が含まれていることを確認する！
+await expect(
+  page.locator('#ResultArea > div.c-soat_pop.js_soat_pop > div.soat_pop_inner > div.soat_pop_content > ul > li:nth-child(1) > span')
+).toContainText('排気');
+//カスタマイズ＞排気が表示となっていることを確認
+await expect(page.locator('._btn').first()).toBeVisible();
+//カスタマイズ表示　非表示の確認＞ダイアログを閉じる
+await page.locator('.soat_pop_close').click();
+
+await page.waitForTimeout(3000);
+
+//固定だった型式を右端へ項目並べ替え
+// 1. ドラッグする要素（掴むもの：型式）
+source = page.locator('#c-sortable > div.item.col_type_nm.sort_fixed');
+// 2. ドロップする目標地点（落とす場所：画像）
+target = page.locator('#c-sortable > div.item.col_tokki_nm.sort_fixed');
+// 🌟 source を target の位置までドラッグ＆ドロップする最強の1行！
+await source.dragTo(target);
+
+await page.waitForTimeout(3000);
+
+// 🌟 #c-sortable の中にある div.item のうち、「一番最後（.last()）」の要素を取得し、
+// その中に「型式」という文字が含まれているか確認する！
+await expect(
+  page.locator('#c-sortable > div.item:visible').last()
+).toContainText('型式');
+await page.waitForTimeout(1000);
+await page.getByText('上記条件から検索').waitFor();
+
+//固定だった型式を右端へ項目並べ替えを戻す
+// 1. ドラッグする要素（掴むもの：型式）
+source = page.locator('#c-sortable > div.item.col_type_nm.sort_fixed');
+// 2. ドロップする目標地点（落とす場所：画像）
+target = page.locator('#c-sortable > div.item.col_year_num.sort_fixed');
+// 🌟 source を target の位置までドラッグ＆ドロップする最強の1行！
+await source.dragTo(target);
+
+await page.waitForTimeout(3000);
+
+// 🌟 div.item の後ろに :visible を追加して、「画面に見えている項目の中で1番目」を狙い撃ちする！
+await expect(
+  page.locator('#c-sortable > div.item:visible').first()
+).toContainText('型式');
+await page.getByText('上記条件から検索').waitFor();
+
+//列並べ替え後に元の順か確認
+// 🌟 2番目の列が動いていないことを確認
+await expect(
+  page.locator('#c-sortable > div.item:visible').nth(1)
+).toContainText('年式');
+
+// 🌟 4番目の列（排気）が動いていないことを確認
+await expect(
+  page.locator('#c-sortable > div.item:visible').nth(4)
+).toContainText('排気');
+
+// 🌟 5番目の列（燃料）が動いていないことを確認
+await expect(
+  page.locator('#c-sortable > div.item:visible').nth(5)
+).toContainText('燃料');
+
+// 🌟 30番目の列（区分）が動いていないことを確認
+await expect(
+  page.locator('#c-sortable > div.item:visible').nth(30)
+).toContainText('区分');
+
+// 🌟 31番目の列（画像）が動いていないことを確認
+await expect(
+  page.locator('#c-sortable > div.item:visible').nth(31)
+).toContainText('画像');
+await page.getByText('上記条件から検索').waitFor();
+
 
 // お気に入り登録、削除の確認
 await page.getByRole('link', { name: 'お気に入り' }).click();
@@ -153,6 +271,25 @@ await page.waitForTimeout(1000);
 
 await expect(page.getByRole('cell', { name: 'トヨタ' }).first()).toBeVisible({ timeout: 15000 });
 await expect(page.getByRole('cell', { name: 'アクア' }).first()).toBeVisible();
+
+// 1. 指定したマス目（td）の中にある文字を取得する
+const actualHistoryDate = await page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(3)').innerText();
+// 2. 取得した文字をコンソールに表示する！（前後に見えないスペースがないか確認するために [ ] で囲むのがプロの技です）
+console.log('📝 実際の検索履歴画面の1件目データ日付の値は: [', actualHistoryDate, ']');
+
+// 1. パソコンの時計から「今日」のデータを取得する
+const today = new Date();
+const year = today.getFullYear();
+// 月と日は1桁の場合に「0」を埋めて必ず2桁にする魔法（例：3月 -> 03）
+const month = String(today.getMonth() + 1).padStart(2, '0');
+const day = String(today.getDate()).padStart(2, '0');
+// 2. 画面の表示形式に合わせて日付の文字列を組み立てる（ここでは YYYY/MM/DD の形式）
+const expectedDate = `${year}/${month}/${day}`;
+console.log('📝 期待する今日の日付と一致すること:', expectedDate);
+// 3. 指定した表のマス目に、今日の日付が含まれていることを確認する！
+await expect(
+  page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(3)')
+).toContainText(expectedDate);
 
 await page.getByRole('link', { name: '選択', exact: true }).first().click();
 await expect(page.locator('select[name="maker"]')).toBeVisible();
