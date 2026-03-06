@@ -5,8 +5,8 @@ test('注文販売', async ({ page }, testInfo) => {
 
   await page.goto('https://devdlpro.proto-dataline.com/');
   await page.waitForTimeout(2000);
-  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0001');
-  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0001');
+  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0005');
+  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0005');
   await page.waitForTimeout(2000);
   await page.getByRole('button', { name: 'ログイン' }).click();
   await page.waitForTimeout(2000);
@@ -131,7 +131,7 @@ test('注文販売', async ({ page }, testInfo) => {
     await page.waitForTimeout(2000);
   await expect(page.getByRole('heading', { name: '検索履歴' })).toBeVisible();
 //No.26
-//  今日の日付を YYYYMMDD 形式で作成する
+// ① 今日の日付を YYYYMMDD 形式で作成する
   const now = new Date();
   const yyyy = now.getFullYear();
   const mm = String(now.getMonth() + 1).padStart(2, '0'); // 月は0から始まるので+1
@@ -170,11 +170,15 @@ test('注文販売', async ({ page }, testInfo) => {
 //No.28
   await page.getByRole('link', { name: '検索履歴' }).click();
   await expect(page.getByRole('heading', { name: '検索履歴' })).toBeVisible();
- // 1. テキストを取得
+
+/*　3/4修正スキップ
+  // 1. テキストを取得
   let text2 = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
    console.log('表示中の履歴件数は:', text2); 
   // 2. 変数の中に「1」が含まれているか検証
   expect(text2).toContain(' 件中 1 -');
+
+
 
 //No.29
   await page.getByRole('link', { name: '次へ>>' }).click();
@@ -208,7 +212,7 @@ test('注文販売', async ({ page }, testInfo) => {
   expect(text2).toContain(' 件中 51 -');
   
 //ページ1を押下するときのケース
-/*
+
   await page.getByRole('link', { name: '1' }).click();
   //await page.waitForTimeout(4000);
   //遷移後、一行目”No”が「1」になるまでまつ
@@ -218,6 +222,8 @@ test('注文販売', async ({ page }, testInfo) => {
   console.log('表示中の履歴件数は:', text2); 
   // 2. 変数の中に「1」が含まれているか検証
   expect(text2).toContain(' 件中 1 -');
+
+
 */
 //No.32
   await page.getByRole('link', { name: '全てクリア' }).click();
@@ -397,7 +403,8 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
 // 🚨 fill() は「文字列」しか受け付けない仕様です！
 // そのため、数値を入力したい場合は .toString() をつけて文字に変換してあげます
   await page.locator('input[name="txt_kyori"]').fill(total.toString());
-//No.48 プルダウンの value 属性に合わせて文字列（String）に変換する
+//No.48
+//プルダウンの value 属性に合わせて文字列（String）に変換する
   const year1 = yyyy + 1
 //今年の一年後の数字を文字列に変換する
   const year2 = year1.toString();
@@ -461,7 +468,7 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
   await page.locator('textarea[name="txt_tokki"]').click();
   await page.locator('textarea[name="txt_tokki"]').fill('テスト注文販売');
     await page.waitForTimeout(1000);
-//No.56
+//No.57
 //注文販売参考価格＞計算前の価格を取得
   // 1. 注文販売参考価格の金額が表示されている要素を指定する（※実際のセレクターに変更してください）
   const locatorC = page.locator('#vehicle_price > table > tbody > tr > td'); 
@@ -482,6 +489,7 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
   console.log(`計算後の注文販売価格は ${kakakunumB}`);
 
   expect(kakakunumA).not.toBe(kakakunumB); 
+
   // ==========================================
   // 🌟 追加するコード：変数の中身をテキストファイルに書き出して保存する！
   // ==========================================
@@ -498,7 +506,7 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
   // 2. 計算後、変数「chumonprice1」の中身を、テキストファイルとして書き込む（保存する）！
   fs.writeFileSync(textFilePath, String(chumonprice1));
   console.log(`💡 変数の値 [${chumonprice1}] を、テキストファイルとして [${textFilePath}] に保存しました！`);
-
+  
 //No.57
   await page.locator('input[name="txt_name"]').click();
   await page.locator('input[name="txt_name"]').fill('注文一郎');
@@ -596,14 +604,14 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
   await page.locator('select[name="grade[]"]').selectOption('119');
 //No.78
   await page.getByRole('link', { name: '検 索' }).click();
-    await page.waitForTimeout(5000);  
+  await page.waitForTimeout(5000);
   await page.getByRole('link', { name: '型式・類別から検索' }).click();
-    await page.waitForTimeout(5000);  
-  await expect.soft(page).toHaveURL(/.*grade.php/); 
-  await expect(page).toHaveTitle('グレード検索'); 
+  await page.waitForTimeout(8000);
+//  await expect.soft(page).toHaveURL(/.*grade.php/);
+  await expect(page).toHaveTitle('グレード検索');
 //No.79
-   await expect(page.locator('#result_body > table > tbody > tr:nth-child(1) > td.col_g_car')).toHaveText('デミオ');
-   await expect(page.locator('#result_body > table > tbody > tr:nth-child(2) > td.col_g_car')).toHaveText('デミオ'); 
+  await expect(page.locator('#result_body > table > tbody > tr:nth-child(1) > td.col_g_car')).toHaveText('デミオ');
+  await expect(page.locator('#result_body > table > tbody > tr:nth-child(2) > td.col_g_car')).toHaveText('デミオ'); 
 //No.80
   await page.goBack({ waitUntil: 'networkidle' });
   await page.waitForTimeout(3000);

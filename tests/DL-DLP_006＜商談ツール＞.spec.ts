@@ -3,7 +3,7 @@ import { test, expect } from '../custom-test';
 //import { test, expect } from '@playwright/test';
 //DLP回帰テスト-AA相場検索-グレード検索＞AA相場検索
 //ログイン画面
-
+import fs from 'fs';
 test('test', async ({ page }) => {
 // ▼ この行を追加（テストの制限時間を180秒に変更）
   test.setTimeout(360000);
@@ -11,11 +11,11 @@ test('test', async ({ page }) => {
   //ログイン画面へ遷移
   await page.goto('https://devdlpro.proto-dataline.com/top/top.php');
   await page.getByRole('textbox', { name: 'ログインID' }).click();
-  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0002');
+  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0005');
   
   // パスワードにtst0002を入力
   await page.getByRole('textbox', { name: 'ログインID' }).press('Tab');
-  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0002');
+  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0005');
   await page.getByRole('button', { name: 'ログイン' }).click();
   await page.waitForLoadState('networkidle');
   
@@ -100,6 +100,26 @@ await page.waitForTimeout(1000);
 
 await expect(page.getByRole('cell', { name: 'トヨタ' }).first()).toBeVisible({ timeout: 15000 });
 await expect(page.getByRole('cell', { name: 'ハリアー' }).first()).toBeVisible();
+
+// 1. 指定したマス目（td）の中にある文字を取得する
+const actualHistoryDate = await page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(3)').innerText();
+// 2. 取得した文字をコンソールに表示する！（前後に見えないスペースがないか確認するために [ ] で囲むのがプロの技です）
+console.log('📝 実際の検索履歴画面の1件目データ日付の値は: [', actualHistoryDate, ']');
+
+// 1. パソコンの時計から「今日」のデータを取得する
+let today = new Date();
+let year = today.getFullYear();
+// 月と日は1桁の場合に「0」を埋めて必ず2桁にする魔法（例：3月 -> 03）
+let month = String(today.getMonth() + 1).padStart(2, '0');
+let day = String(today.getDate()).padStart(2, '0');
+// 2. 画面の表示形式に合わせて日付の文字列を組み立てる（ここでは YYYY/MM/DD の形式）
+const expectedDate = `${year}/${month}/${day}`;
+console.log('📝 期待する今日の日付と一致すること:', expectedDate);
+// 3. 指定した表のマス目に、今日の日付が含まれていることを確認する！
+await expect(
+  page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(3)')
+).toContainText(expectedDate);
+
 
 await page.getByRole('link', { name: '選択', exact: true }).first().click();
 //検索条件＞「選択」後、検索結果一覧＞検索条件である「モデル」「認定型式」が一致することを確認
@@ -285,9 +305,9 @@ await page.locator('#vehicle_guest > table > tbody > tr:nth-child(6) > td:nth-ch
 const targetDate = new Date();
 targetDate.setMonth(targetDate.getMonth() + 2);
 // 2. 年と月を計算し、月は「04」のように必ず2桁にする
-const year = targetDate.getFullYear();
-const month = String(targetDate.getMonth() + 1).padStart(2, '0');
-const day = String(targetDate.getDate()).padStart(2, '0'); // 日にちも必要な場合
+year = targetDate.getFullYear();
+month = String(targetDate.getMonth() + 1).padStart(2, '0');
+day = String(targetDate.getDate()).padStart(2, '0'); // 日にちも必要な場合
 const inputString = `${year}/${month}/${day}`;
 // 4. 計算した日付を入力枠にセットする
 await page.locator('#txt_nyuukodate').fill(inputString);
@@ -313,6 +333,10 @@ const page1Promise = page.waitForEvent('popup');
 await page.getByRole('link', { name: '印刷' }).click();
 // 3. 新しいタブを「page1」という変数として受け取る
 const page1 = await page1Promise;
+
+// 🌟 ここで page1 の画面サイズを 横1280px × 縦1200px に強制変更する！
+await page1.setViewportSize({ width: 1280, height: 1200 });
+
 // 4. 新しいタブの読み込みが完了するまで待機（エラー防止）
 await page1.waitForLoadState();
 // 5. 【重要】元の page ではなく、新しいタブ（page1）の中から金額のセルを探す
@@ -322,6 +346,19 @@ const targetCell = page1.locator('#print > table > tbody > tr > td > table:nth-c
 // ★変更：古い変数ではなく、新しく取り直した変数（updatedPriceText）の「¥」を消して比較する
 // 1. 元の画面で取得した値（文字列）から「¥」を消す
 const cleanPrice1 = priceNewshitadorikaitori.replace('¥', '');
+
+// ==========================================
+// 🌟 追加するコード：変数の中身をテキストファイルに書き出して保存する！
+// ==========================================
+const dirPath = './downloads';
+const textFilePath = './downloads/kaitori-shitadori-cleanPrice.txt'; // 好きなファイル名にしてください
+// 1. もし「downloads」フォルダがまだ無ければ、自動で作る（エラー防止の鉄則！）
+if (!fs.existsSync(dirPath)) {
+  fs.mkdirSync(dirPath, { recursive: true });
+}
+// 2. 変数「cleanPrice1」の中身を、テキストファイルとして書き込む（保存する）！
+fs.writeFileSync(textFilePath, cleanPrice1);
+console.log(`💡 変数の値 [${cleanPrice1}] を、テキストファイルとして [${textFilePath}] に保存しました！`);
 
 // ※確認用：印刷画面のセルから「実際の文字」を取り出してログに表示する
 const targetCellText = await targetCell.innerText();
@@ -517,6 +554,7 @@ await page.waitForTimeout(2000);
   //型式・類別から検索
   await page.getByRole('link', { name: '型式・類別から検索' }).click();
 await page.waitForTimeout(2000);
+await page.waitForLoadState('networkidle');
 
   //グレード検索へ遷移する
 await expect(page).toHaveTitle('グレード検索');
