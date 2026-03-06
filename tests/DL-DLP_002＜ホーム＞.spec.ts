@@ -90,6 +90,61 @@ const page4Promise = page.waitForEvent('popup');
 //タブを閉じる場合
   await page4.close();
 
+ await page.getByRole('link', { name: 'Data Line PRO' }).click();
+/*お知らせの確認テストここから(未完成)*/
+  // --- 1. 値の取得と保存 ---
+  // 例：商品リストの最初のアイテムの名前を取得する
+  // .trim() をつけると、前後の余計な空白を削除してきれいに取れます（推奨）
+  const targetText1 = (await page.locator('#info > div.info_slide.slick-initialized.slick-slider.slick-dotted').first().textContent())?.trim();  
+
+  // 念のため、ちゃんと取れたかログに出しておく
+  console.log(`取得した値: ${targetText1}`);
+ // もし値が空（null/undefined）ならテストを失敗させるガード
+  if (!targetText1) throw new Error('値が取得できませんでした');
+ await page.getByRole('img', { name: '←' }).click();
+
+  await expect(page.getByRole('listbox')).not.toContainText(targetText1);
+await page.getByRole('img', { name: '←' }).click();
+
+// --- 3. 検証（アサーション） ---
+  // 詳細画面のタイトル要素(#detail-title)が、さっき保存した targetText と同じか？
+  const detailTitle = page.locator('#info > div.info_slide.slick-initialized.slick-slider.slick-dotted');
+  
+  // 不一致を確認する場合
+  await expect(detailTitle).toHaveText(targetText1);
+
+  // （または）その文字を含んでいるか確認する場合（"商品名：〇〇" などの場合）
+  await expect(detailTitle).toContainText(targetText1);
+
+  await page.getByRole('img', { name: '→' }).click();
+/*ここまで*/
+
+await page.getByRole('combobox', { name: 'メーカー' }).click();
+await page.getByRole('treeitem', { name: 'トヨタ', exact: true }).click();
+await page.waitForTimeout(3000);
+await page.getByRole('textbox', { name: '車種 *必須' }).click();
+await page.waitForTimeout(3000);
+await page.getByRole('treeitem', { name: 'Ｃ－ＨＲ' }).click();
+await page.waitForTimeout(2000);
+await page.getByRole('textbox', { name: '型式' }).click();
+await page.waitForTimeout(3000);
+await page.getByRole('treeitem', { name: 'ZYX10' }).click();
+await page.waitForTimeout(2000);
+await page.getByRole('textbox', { name: 'グレード' }).click();
+await page.waitForTimeout(3000);
+await page.getByRole('treeitem', { name: 'Ｓ', exact: true }).click();
+await page.waitForTimeout(3000);
+await page.getByRole('textbox', { name: '年式' }).click();
+await page.waitForTimeout(3000);
+await page.getByRole('treeitem', { name: '(H29)' }).click();
+await page.waitForTimeout(2000);
+//await page.getByText('ＡＡ相場で検索 該当件数83件').click();
+await page.locator('#info_box').getByText('ＡＡ相場').click();
+
+await page.waitForTimeout(3000);
+await expect(page.locator('#t_result_area')).toContainText('Ｓ');
+
+
   await page.getByRole('link', { name: '基準価格' }).click();
   await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/spg/spg.php'); 
 
@@ -131,57 +186,96 @@ const page4Promise = page.waitForEvent('popup');
   await expect.soft(page7).toHaveURL('https://marus-net.com/'); 
   await page7.close();
 
-    await page.getByRole('link', { name: '基準価格' }).click();
+   await page.getByRole('link', { name: '基準価格' }).click();
+   await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/spg/spg.php'); 
 
- await page.getByRole('link', { name: 'Data Line PRO' }).click();
-/*お知らせの確認テストここから(未完成)*/
-  // --- 1. 値の取得と保存 ---
-  // 例：商品リストの最初のアイテムの名前を取得する
-  // .trim() をつけると、前後の余計な空白を削除してきれいに取れます（推奨）
-  const targetText1 = (await page.locator('#info > div.info_slide.slick-initialized.slick-slider.slick-dotted').first().textContent())?.trim();  
+   //No.48
+    await page.locator('a').nth(2).click();
+    await expect(page.locator('#snav').getByText('ようこそ テスト0001 フルパック 様')).toBeVisible();
+//No.49
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(1) > a')).toContainText('グレード検索');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(2) > a')).toContainText('AA相場');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(3) > a')).toContainText('小売相場');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(4) > a')).toContainText('商談ツール');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(5) > a')).toContainText('買取・下取');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(6) > a')).toContainText('商談履歴');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(7) > a')).toContainText('商談設定');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(8) > a')).toContainText('乗り換えPOP');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(9) > a')).toContainText('仕入リサーチ');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(10) > a')).toContainText('注文販売');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(11) > a')).toContainText('流通レポート');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(12) > a')).toContainText('業界ニュース');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(13) > a')).toContainText('陸送');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(14) > a')).toContainText('販促・事務用品');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(15) > a')).toContainText('基準価格');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(16) > a')).toContainText('使い方');
+    await expect(page.locator('#snav > ul.sideNav > li:nth-child(17) > a')).toContainText('TOP');    
+//   await expect(page.locator('#snav > ul.sideNav > li:nth-child(14) > a')).toContainText('基準価格');
+//No.50
+  await page.locator('#snav').getByRole('link', { name: 'グレード検索' }).click();
+  await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/grade/grade.php'); 
+    await page.waitForTimeout(2000); 
+  await page.locator('a').nth(2).click();
+  await page.locator('#snav').getByRole('link',{ name: 'AA相場' }).click();
+  await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/aa/aa.php');
+    await page.waitForTimeout(2000); 
 
-  // 念のため、ちゃんと取れたかログに出しておく
-  console.log(`取得した値: ${targetText1}`);
- // もし値が空（null/undefined）ならテストを失敗させるガード
-  if (!targetText1) throw new Error('値が取得できませんでした');
- await page.getByRole('img', { name: '←' }).click();
+  await page.locator('a').nth(2).click();
+  await page.locator('#snav').getByRole('link',{ name: '小売相場' }).click();
+  await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/retail/retail.php');
+    await page.waitForTimeout(2000); 
 
-  await expect(page.getByRole('listbox')).not.toContainText(targetText1);
-await page.getByRole('img', { name: '←' }).click();
+  await page.locator('a').nth(2).click();
+  await page.locator('#snav').getByRole('link',{ name: '仕入リサーチ' }).click();
+  await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/stock/stock.php');
+    await page.waitForTimeout(2000); 
 
-// --- 3. 検証（アサーション） ---
-  // 詳細画面のタイトル要素(#detail-title)が、さっき保存した targetText と同じか？
-  const detailTitle = page.locator('#info > div.info_slide.slick-initialized.slick-slider.slick-dotted');
-  
-  // 不一致を確認する場合
-  await expect(detailTitle).toHaveText(targetText1);
+  await page.locator('a').nth(2).click();  
+  await page.locator('#snav').getByRole('link', { name: '注文販売' }).click();
+  await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/stock_biz/stock_biz.php');
+  await page.locator('a').nth(2).click();
+    await page.waitForTimeout(2000); 
 
-  // （または）その文字を含んでいるか確認する場合（"商品名：〇〇" などの場合）
-  await expect(detailTitle).toContainText(targetText1);
+  await page.locator('#snav').getByRole('link', { name: '流通レポート' }).click();
+  await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/info/info.php');  
+  await page.locator('a').nth(2).click();
+    await page.waitForTimeout(2000); 
 
-  await page.getByRole('img', { name: '→' }).click();
-/*ここまで*/
+  const page8Promise = page.waitForEvent('popup');
+  await page.locator('#snav').getByRole('link',{ name: '業界ニュース' }).click();
+      await page.waitForTimeout(2000); 
+  const page8 = await page8Promise;
+  await expect.soft(page8).toHaveURL('https://www.goonews.jp/');
+  await page8.close();
 
-await page.getByRole('combobox', { name: 'メーカー' }).click();
-await page.getByRole('treeitem', { name: 'トヨタ', exact: true }).click();
-await page.waitForTimeout(3000);
-await page.getByRole('textbox', { name: '車種 *必須' }).click();
-await page.waitForTimeout(3000);
-await page.getByRole('treeitem', { name: 'Ｃ－ＨＲ' }).click();
-await page.waitForTimeout(2000);
+  const page9Promise = page.waitForEvent('popup');
+  await page.locator('#snav').getByRole('link', { name: '陸送' }).click();
+      await page.waitForTimeout(2000); 
+  const page9 = await page9Promise;
+  await expect.soft(page9).toHaveURL('https://devdlpro.proto-dataline.com/transport/transport.php'); 
+  await page9.close();
 
-await page.getByRole('textbox', { name: 'グレード' }).click();
-await page.waitForTimeout(3000);
-await page.getByRole('treeitem', { name: 'Ｓ', exact: true }).click();
-await page.waitForTimeout(3000);
-await page.getByRole('textbox', { name: '年式' }).click();
-await page.waitForTimeout(3000);
-await page.getByRole('treeitem', { name: '(H29)' }).click();
-await page.waitForTimeout(2000);
-//await page.getByText('ＡＡ相場で検索 該当件数83件').click();
-await page.locator('#info_box').getByText('ＡＡ相場').click();
+ 
+  const page10Promise = page.waitForEvent('popup');
+  await page.locator('#snav').getByRole('link',{ name: '販促' }).click();
+      await page.waitForTimeout(2000); 
+  const page10 = await page10Promise;
+  await expect.soft(page10).toHaveURL('https://marus-net.com/'); 
+  await page10.close();
 
-await page.waitForTimeout(3000);
-await expect(page.locator('#t_result_area')).toContainText('Ｓ');
-//0206コミット2
+  await page.locator('#snav').getByRole('link', { name: '基準価格' }).click();
+      await page.waitForTimeout(2000); 
+  await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/spg/spg.php'); 
+
+ await page.locator('a').nth(2).click();  
+  const page11Promise = page.waitForEvent('popup');
+ await page.locator('#snav').getByRole('link', { name: '使い方' }).click();
+      await page.waitForTimeout(2000); 
+  const page11 = await page11Promise;
+      await expect.soft(page11).toHaveURL('https://devdlpro.proto-dataline.com/download/manual.pdf'); 
+  await page11.close();
+
+  await page.locator('#snav').getByRole('link', { name: 'TOP' }).click();
+      await page.waitForTimeout(2000); 
+  await expect.soft(page).toHaveURL('https://devdlpro.proto-dataline.com/top/top.php'); 
 });
