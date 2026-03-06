@@ -1,21 +1,17 @@
-//custom-test.tsを使用
 import { test, expect } from '../custom-test';
-//import { test, expect } from '@playwright/test';
-//DLP回帰テスト-AA相場検索-グレード検索＞AA相場検索
-//ログイン画面
 import fs from 'fs';
-test('test', async ({ page }) => {
+test('商談ツール', async ({ page }) => {
 // ▼ この行を追加（テストの制限時間を180秒に変更）
   test.setTimeout(360000);
 
   //ログイン画面へ遷移
   await page.goto('https://devdlpro.proto-dataline.com/top/top.php');
   await page.getByRole('textbox', { name: 'ログインID' }).click();
-  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0005');
+  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0006');
   
   // パスワードにtst0002を入力
   await page.getByRole('textbox', { name: 'ログインID' }).press('Tab');
-  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0005');
+  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0006');
   await page.getByRole('button', { name: 'ログイン' }).click();
   await page.waitForLoadState('networkidle');
   
@@ -168,7 +164,7 @@ await page.waitForTimeout(3000);
   await page.goto('https://devdlpro.proto-dataline.com/tradein_biz/tradein_biz.php#19c74720de512604');
 // 「検索」押下
   await page.getByRole('link', { name: '検 索' }).click();
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(5000);
 
   // 検索結果一覧＞「グレード」＞2.5Sと一致確認
  await expect(page.getByRole('cell', { name: /２．５Ｓ/ }).nth(1)).toBeVisible();
@@ -335,7 +331,7 @@ await page.getByRole('link', { name: '印刷' }).click();
 const page1 = await page1Promise;
 
 // 🌟 ここで page1 の画面サイズを 横1280px × 縦1200px に強制変更する！
-await page1.setViewportSize({ width: 1280, height: 1200 });
+await page1.setViewportSize({ width: 1280, height: 800 });
 
 // 4. 新しいタブの読み込みが完了するまで待機（エラー防止）
 await page1.waitForLoadState();
@@ -351,7 +347,7 @@ const cleanPrice1 = priceNewshitadorikaitori.replace('¥', '');
 // 🌟 追加するコード：変数の中身をテキストファイルに書き出して保存する！
 // ==========================================
 const dirPath = './downloads';
-const textFilePath = './downloads/kaitori-shitadori-cleanPrice.txt'; // 好きなファイル名にしてください
+const textFilePath = './downloads/006-kaitorishitadoriPrice.txt'; // 好きなファイル名にしてください
 // 1. もし「downloads」フォルダがまだ無ければ、自動で作る（エラー防止の鉄則！）
 if (!fs.existsSync(dirPath)) {
   fs.mkdirSync(dirPath, { recursive: true });
@@ -541,6 +537,9 @@ const page50Promise = page.waitForEvent('popup');
   await page.getByRole('link', { name: '拡大表示' }).click();
   const page50 = await page50Promise;
 
+// 🌟 ここで page1 の画面サイズを 横1280px × 縦1200px に強制変更する！
+await page50.setViewportSize({ width: 1280, height: 800 });
+
   //拡大表示閉じる
   await page50.getByRole('button', { name: '閉じる' }).click();
 
@@ -550,20 +549,17 @@ const page50Promise = page.waitForEvent('popup');
   //購入予定車輌へ遷移する
   await expect(page.getByRole('img', { name: '購入予定車輌' })).toBeVisible();
 await page.waitForTimeout(2000);
-
-  //型式・類別から検索
-  await page.getByRole('link', { name: '型式・類別から検索' }).click();
+await page.keyboard.press('Home');
+//型式・類別から検索
+await page.getByRole('link', { name: '型式・類別から検索' }).click();
 await page.waitForTimeout(2000);
-await page.waitForLoadState('networkidle');
-
-  //グレード検索へ遷移する
 await expect(page).toHaveTitle('グレード検索');
 await page.waitForTimeout(2000);
-
 //ブラウザバックで商談ツールへ遷移する
   await page.goto('https://devdlpro.proto-dataline.com/tradein_biz/tradein_biz.php#19c79f1470a62');
 await page.waitForTimeout(2000);
-
 //商談ツール画面を表示
 await expect(page).toHaveTitle('買取・下取');
+
+
 });

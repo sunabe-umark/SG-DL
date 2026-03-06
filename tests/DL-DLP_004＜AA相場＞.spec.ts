@@ -2,20 +2,18 @@
 import { test, expect } from '../custom-test';
 //import { test, expect } from '@playwright/test';
 //DLP回帰テスト-AA相場検索-グレード検索＞AA相場検索
-//ログイン画面
-
-test('test', async ({ page }) => {
+test('AA相場', async ({ page }) => {
 // ▼ この行を追加（テストの制限時間を120秒に変更）
   test.setTimeout(360000);
 
   //ログイン画面へ遷移
   await page.goto('https://devdlpro.proto-dataline.com/top/top.php');
   await page.getByRole('textbox', { name: 'ログインID' }).click();
-  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0002');
+  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0001');
   
   // パスワードにtst0002を入力
   await page.getByRole('textbox', { name: 'ログインID' }).press('Tab');
-  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0002');
+  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0001');
   await page.getByRole('button', { name: 'ログイン' }).click();
   await page.waitForLoadState('networkidle');
   
@@ -238,7 +236,7 @@ await expect(page.getByRole('cell', { name: 'アクア' }).nth(1)).toBeVisible()
 //全てクリアを押下する
 await page.waitForTimeout(1000);
 await page.getByRole('link', { name: '全てクリア' }).click({ timeout: 15000 });
-await page.waitForTimeout(1000);
+await page.waitForTimeout(10000);
 await page.getByRole('link', { name: 'お気に入り' }).first().click({ timeout: 15000 });
 await page.waitForTimeout(1000);
 await page.getByRole('link', { name: '選択', exact: true }).first().click();
