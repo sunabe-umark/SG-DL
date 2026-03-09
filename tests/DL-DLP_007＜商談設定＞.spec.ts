@@ -11,11 +11,11 @@ test('商談設定', async ({ page }) => {
   //ログイン画面へ遷移
   await page.goto('https://devdlpro.proto-dataline.com/top/top.php');
   await page.getByRole('textbox', { name: 'ログインID' }).click();
-  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0002');
+  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0006');
   
   // パスワードにtst0002を入力
   await page.getByRole('textbox', { name: 'ログインID' }).press('Tab');
-  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0002');
+  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0006');
   await page.getByRole('button', { name: 'ログイン' }).click();
   await page.waitForLoadState('networkidle');
 

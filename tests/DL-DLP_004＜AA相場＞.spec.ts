@@ -390,7 +390,9 @@ await expect(targetElement3).not.toHaveText(targetTextprice3, { timeout: 30000 }
   console.log('内装フィルタなし１件目の値の中身は:', targetTextnaisou1);
 //内装Bでフィルタリング
   await page.locator('select[name="filter_i_value"]').selectOption('B');
-  await page.goto('https://devdlpro.proto-dataline.com/aa/aa.php#19c562c6ae4a7ab');
+  //await page.goto('https://devdlpro.proto-dataline.com/aa/aa.php#19c562c6ae4a7ab');
+  // ⭕️ 代わりに、前回学んだ「ローディングが消えるのを待つ」プロの処理をここに入れる！
+  await expect(page.locator('#loadingdialog')).toBeHidden({ timeout: 30000 });
   await page.waitForTimeout(1000);
   const targetTextnaisou2 = (await page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_i_value').first().textContent())?.trim();  
   console.log('内装「B」フィルタ１件目の値の中身は:', targetTextnaisou2);
@@ -411,7 +413,9 @@ await expect(targetElement3).not.toHaveText(targetTextprice3, { timeout: 30000 }
 //MC 前でフィルタリング
 
 await page.locator('select[name="filter_atype_nm"]').selectOption('前');
-await page.goto('https://devdlpro.proto-dataline.com/aa/aa.php#19c5647d3e1d3e5');
+//await page.goto('https://devdlpro.proto-dataline.com/aa/aa.php#19c5647d3e1d3e5');
+// ⭕️ 代わりに、前回学んだ「ローディングが消えるのを待つ」プロの処理をここに入れる！
+await expect(page.locator('#loadingdialog')).toBeHidden({ timeout: 30000 });
 
 await page.waitForTimeout(1000);
 // 1. 監視する要素を定義
@@ -505,6 +509,8 @@ await expect(page.locator('iframe[name^="fancybox-frame"]').contentFrame().locat
 const page2Promise = page.waitForEvent('popup');
   await page.locator('iframe[name^="fancybox-frame"]').contentFrame().getByRole('link', { name: '印刷' }).click();
   const page2 = await page2Promise;
+// 🌟 ここで page2 の画面サイズを 横1280px × 縦1200px に強制変更する！
+await page2.setViewportSize({ width: 1280, height: 800 });
 await expect(page2.getByRole('cell', { name: '日産' })).toBeVisible();
 await page2.getByText('キューブ').click();
 await expect(page2.getByRole('cell', { name: 'ヒット数に対する比率(％)：' })).toBeVisible();
@@ -643,6 +649,8 @@ await page.getByRole('link', { name: '選択', exact: true }).first().click();
 const page3Promise = page.waitForEvent('popup');
   await page.getByRole('link', { name: '印刷' }).click();
   const page3 = await page3Promise;
+// 🌟 ここで page3 の画面サイズを 横1280px × 縦1200px に強制変更する！
+await page3.setViewportSize({ width: 1280, height: 800 });
 //メーカー・車種で確認
 await expect(page3.getByRole('cell', { name: '日産' })).toBeVisible();
 await expect(page3.getByText('キューブ')).toBeVisible();
