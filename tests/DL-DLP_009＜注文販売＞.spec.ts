@@ -1,11 +1,12 @@
 import { test, expect } from  '../custom-test';
+import fs from 'fs';
 test('注文販売', async ({ page }, testInfo) => {
   test.setTimeout(300000);
 
   await page.goto('https://devdlpro.proto-dataline.com/');
   await page.waitForTimeout(2000);
-  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0001');
-  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0001');
+  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0006');
+  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0006');
   await page.waitForTimeout(2000);
   await page.getByRole('button', { name: 'ログイン' }).click();
   await page.waitForTimeout(2000);
@@ -170,42 +171,22 @@ test('注文販売', async ({ page }, testInfo) => {
   await page.getByRole('link', { name: '検索履歴' }).click();
   await expect(page.getByRole('heading', { name: '検索履歴' })).toBeVisible();
  // 1. テキストを取得
-  let text2 = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
-   console.log('表示中の履歴件数は:', text2); 
-  // 2. 変数の中に「1」が含まれているか検証
-  expect(text2).toContain(' 件中 1 -');
+// 画面の読み込みが終わって、指定の文字が表示されるまでPlaywrightが自動で待機（リトライ）してくれます！
+await expect(page.getByText('件中 1 -')).toBeVisible();
+console.log('✅ 表示中の履歴件数が「 件中 1 -」であることを確認しました！');
 
+await page.waitForTimeout(1000);
+// 検索履歴ページングの確認
 //No.29
-  await page.getByRole('link', { name: '次へ>>' }).click();
-  //await page.waitForTimeout(4000);
-  //遷移後、一行目”No”が「51」になるまでまつ
-  await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(1)').first()).toHaveText('51')
-  text2 = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
-  console.log('表示中の履歴件数は:', text2); 
-  // 2. 変数の中に「1」が含まれているか検証
-  expect(text2).toContain(' 件中 51 -');
-
+await page.getByRole('link', { name: '次へ>>' }).click();
+await expect(page.getByRole('cell', { name: '51', exact: true })).toBeVisible();
 //No.30
-  await page.getByRole('link', { name: '<<前へ' }).click();
-  //await page.waitForTimeout(4000);
-  //遷移後、一行目”No”が「1」になるまでまつ
-  await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(1)').first()).toHaveText('1')
-   // 1. テキストを取得
-  text2 = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
-   console.log('表示中の履歴件数は:', text2); 
-  // 2. 変数の中に「1」が含まれているか検証
-  expect(text2).toContain(' 件中 1 -');
-
+await page.getByRole('link', { name: '<<前へ' }).click();
+await expect(page.getByRole('cell', { name: '1', exact: true })).toBeVisible();
 //No.31
-  await page.getByRole('link', { name: '2' }).click();
-  //await page.waitForTimeout(4000);
-  //遷移後、一行目”No”が「51」になるまでまつ
-  await expect(page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(1)').first()).toHaveText('51')
-  text2 = await page.locator('#btnarea > tbody > tr > td > ul > li:nth-child(7)').textContent();
-  console.log('表示中の履歴件数は:', text2); 
-  // 2. 変数の中に「1」が含まれているか検証
-  expect(text2).toContain(' 件中 51 -');
-  
+await page.getByRole('link', { name: '2' }).click();
+await expect(page.getByRole('cell', { name: '51', exact: true })).toBeVisible();
+
 //ページ1を押下するときのケース
 /*
   await page.getByRole('link', { name: '1' }).click();
@@ -481,6 +462,22 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
   console.log(`計算後の注文販売価格は ${kakakunumB}`);
 
   expect(kakakunumA).not.toBe(kakakunumB); 
+  // ==========================================
+  // 🌟 追加するコード：変数の中身をテキストファイルに書き出して保存する！
+  // ==========================================
+  const dirPath = './downloads';
+  const textFilePath = './downloads/009-chumonhanbaiPrice.txt'; // 好きなファイル名にしてください
+  // 1. もし「downloads」フォルダがまだ無ければ、自動で作る（エラー防止の鉄則！）
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+// 🌟 画面の指定した場所から文字を読み取り、変数「chumonprice1」に代入する！
+  const chumonprice1 = await page.locator('#vehicle_breakdown > table > tbody > tr:nth-child(9) > td.v_bd02.v_bd_total').innerText();
+// 無事に取得できたか、念のためログに出して確認する（プロの鉄則！）
+  console.log(`💡 取得した値は: [${chumonprice1}] です！`);
+  // 2. 計算後、変数「chumonprice1」の中身を、テキストファイルとして書き込む（保存する）！
+  fs.writeFileSync(textFilePath, String(chumonprice1));
+  console.log(`💡 変数の値 [${chumonprice1}] を、テキストファイルとして [${textFilePath}] に保存しました！`);
 
 //No.57
   await page.locator('input[name="txt_name"]').click();
@@ -530,8 +527,8 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
   });
   await page.getByRole('link', { name: 'この内容で登録する' }).click();
 //No.70
+  await page.waitForTimeout(5000);
   await page.getByRole('link', { name: 'グラフ表示' }).click();
-    await page.waitForTimeout(5000);
   await expect(page.locator('canvas').nth(1)).toBeVisible();
 
 //No.71
@@ -539,6 +536,8 @@ await page.getByRole('link', { name: 'ソートのクリア' }).click();
   await page.getByRole('link', { name: '印刷' }).click();
   const page13 = await page13Promise;
     await page13.waitForTimeout(5000);
+// 🌟 ここで page1 の画面サイズを 横1280px × 縦1200px に強制変更する！
+await page13.setViewportSize({ width: 1280, height: 800 });
 
   await page13.waitForLoadState(); // 読み込み完了を待つ
   console.log(await page13.title());

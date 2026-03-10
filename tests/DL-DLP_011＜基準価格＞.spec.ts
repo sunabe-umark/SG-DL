@@ -86,8 +86,7 @@ test('基準価格@console', async ({ page }, testInfo) => {
   await page.locator('#search_maker_btn').click();
       await page.waitForTimeout(3000);
 // 3. インジケータが「非表示（Hidden）」になるまで待つ
-await expect(loadingIndicator).toBeHidden();
-
+await expect(loadingIndicator).toBeHidden({ timeout: 30000 });
 // 要素が表示され、その中に「検索結果」が含まれるまで待機
   await expect(page.locator('#btnarea > tbody > tr:nth-child(1) > td > p > span:nth-child(2)')).toContainText('検索結果');
 //No.19

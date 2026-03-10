@@ -47,7 +47,8 @@ export default defineConfig({
   
   use: {
     // 画面サイズを指定（例: 幅1249, 高さ882）
-    viewport: { width: 1249, height: 882 },
+    // viewport: { width: 1249, height: 882 },
+　　viewport: { width: 1280, height: 800 },
     offline: false,
     /* レポートにスクリーンショットを含める設定 */
     //screenshot: 'only-on-failure', // 'on' (常に), 'off' (なし), 'only-on-failure' (失敗時のみ)
@@ -63,8 +64,16 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+
+// ==========================================
+    // 🌟 ここから追加：Microsoft Edge 用の設定！
+    // ==========================================
+    {
+      name: 'Microsoft Edge',
+      use: {
+        ...devices['Desktop Edge'],
+        channel: 'msedge', // 🌟 超重要：パソコンに入っている本物のEdgeを使うという魔法の呪文！
+      },
+    },
   ],
-  
-
 });
-

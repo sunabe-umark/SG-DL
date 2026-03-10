@@ -1,25 +1,21 @@
-//custom-test.tsを使用
 import { test, expect } from '../custom-test';
-//import { test, expect } from '@playwright/test';
-//DLP回帰テスト-AA相場検索-グレード検索＞AA相場検索
-//ログイン画面
 //商談設定①～⑩を設定しておく⇒７と８は他テストに影響があるのでここで設定、終わったら元に戻す
 https://docs.google.com/spreadsheets/d/1xMfbw_5Dp9ME5LTUauBiVhaDMut8POQ2A3YspgtRMLM/edit?gid=1959219696#gid=1959219696&range=L64
 
 //⑦走行加減算設定（買取・下取　乗用車）
 //⑧走行加減算設定（注文販売　乗用車）
-test('test', async ({ page }) => {
+test('商談設定', async ({ page }) => {
 // ▼ この行を追加（テストの制限時間を180秒に変更）
   test.setTimeout(480000);
 
   //ログイン画面へ遷移
   await page.goto('https://devdlpro.proto-dataline.com/top/top.php');
   await page.getByRole('textbox', { name: 'ログインID' }).click();
-  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0002');
+  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0006');
   
   // パスワードにtst0002を入力
   await page.getByRole('textbox', { name: 'ログインID' }).press('Tab');
-  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0002');
+  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0006');
   await page.getByRole('button', { name: 'ログイン' }).click();
   await page.waitForLoadState('networkidle');
 

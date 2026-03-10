@@ -1,20 +1,16 @@
-//custom-test.tsを使用
 import { test, expect } from '../custom-test';
-//import { test, expect } from '@playwright/test';
-//DLP回帰テスト-AA相場検索-グレード検索＞AA相場検索
-//ログイン画面
-test('test', async ({ page }) => {
+test('仕入リサーチ', async ({ page }) => {
 // ▼ この行を追加（テストの制限時間を180秒に変更）
   test.setTimeout(240000);
 
   //ログイン画面へ遷移
   await page.goto('https://devdlpro.proto-dataline.com/top/top.php');
   await page.getByRole('textbox', { name: 'ログインID' }).click();
-  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0002');
+  await page.getByRole('textbox', { name: 'ログインID' }).fill('tst0001');
   
   // パスワードにtst0002を入力
   await page.getByRole('textbox', { name: 'ログインID' }).press('Tab');
-  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0002');
+  await page.getByRole('textbox', { name: 'パスワード' }).fill('tst0001');
   await page.getByRole('button', { name: 'ログイン' }).click();
   await page.waitForLoadState('networkidle');
 
@@ -217,6 +213,9 @@ expect(priceNum).toBeLessThanOrEqual(500);
   const page1Promise = page.waitForEvent('popup');
   await page.getByRole('link', { name: '印刷' }).click();
   const page1 = await page1Promise;
+
+  // 🌟 ここで page1 の画面サイズを 横1280px × 縦1200px に強制変更する！
+  await page1.setViewportSize({ width: 1280, height: 1200 });
 
   // 指定したセル（4行目の3列目）の中に「検索条件」文字が含まれていることを確認する！
   await expect(page1.locator('#print_search > table > tbody > tr:nth-child(4) > td:nth-child(3)')).toContainText('本体価格：10 千円〜 9000千円');
@@ -435,6 +434,26 @@ await page.waitForTimeout(1000);
 //検索履歴＞1件目データ＞メーカー：トヨタ、車種：アクアであることを確認
 await expect(page.getByRole('cell', { name: 'トヨタ' }).first()).toBeVisible({ timeout: 15000 });
 await expect(page.getByRole('cell', { name: 'アクア' }).first()).toBeVisible();
+
+// 1. 指定したマス目（td）の中にある文字を取得する
+const actualHistoryDate = await page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(3)').innerText();
+// 2. 取得した文字をコンソールに表示する！（前後に見えないスペースがないか確認するために [ ] で囲むのがプロの技です）
+console.log('📝 実際の検索履歴画面の1件目データ日付の値は: [', actualHistoryDate, ']');
+
+// 1. パソコンの時計から「今日」のデータを取得する
+let today = new Date();
+let year = today.getFullYear();
+// 月と日は1桁の場合に「0」を埋めて必ず2桁にする魔法（例：3月 -> 03）
+let month = String(today.getMonth() + 1).padStart(2, '0');
+let day = String(today.getDate()).padStart(2, '0');
+// 2. 画面の表示形式に合わせて日付の文字列を組み立てる（ここでは YYYY/MM/DD の形式）
+const expectedDate = `${year}/${month}/${day}`;
+console.log('📝 期待する今日の日付と一致すること:', expectedDate);
+// 3. 指定した表のマス目に、今日の日付が含まれていることを確認する！
+await expect(
+  page.locator('#list_history > table > tbody > tr:nth-child(2) > td:nth-child(3)')
+).toContainText(expectedDate);
+
 //検索履歴＞1件目データを選択する
 await page.getByRole('link', { name: '選択', exact: true }).first().click();
 
@@ -1227,7 +1246,7 @@ await page.getByText(/件中 1 -/).waitFor();
   console.log('一覧データを押下で価格推移予測グラフが表示されることを確認');
   
   // 1. 今日の日付を取得
-  const today = new Date();
+  today = new Date();
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth() + 1;
    console.log('today:', today);
