@@ -54,7 +54,7 @@ class MyMarkdownReporter implements Reporter {
 
         if (buffer) {
           const base64 = buffer.toString('base64');
-          const src = `data:image/jpeg;base64,${base64}`;
+          const src = `data:${img.contentType};base64,${base64}`;
           
           let displayName = img.name;
           if (img.name.includes('__')) {
