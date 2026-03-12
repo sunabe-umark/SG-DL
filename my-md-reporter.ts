@@ -124,3 +124,4 @@ class MyMarkdownReporter implements Reporter {
 }
 
 export default MyMarkdownReporter;
+//コミット用コメント
