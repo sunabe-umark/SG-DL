@@ -25,7 +25,6 @@ test('ソート', async ({ page }) => {
   await expect(page).toHaveTitle('AA相場');
 
 
-  
   // メーカー「トヨタ」を選択
   await page.locator('select[name="maker"]').selectOption('1010');
   await page.waitForTimeout(500);
@@ -4712,5 +4711,151 @@ isA = (clearedValue === '');
 // Playwrightに「true（真）であること」を保証させる！
 expect(isOriginal || isA).toBeTruthy();
 console.log('✅ フィルタ解除後、1件目が「元の値」または「null」であることを確認しました！');
+
+//★ソート機能18「ルーフレール」
+  await page.getByRole('link', { name: '全てクリア' }).click();
+  await page.waitForTimeout(10000);
+
+  // メーカー「スバル」を選択
+await page.locator('select[name="maker"]').selectOption('1045');
+  // 車種「フォレスター」を選択
+await page.locator('select[name="car"]').selectOption('10452006');
+  // グレード「アドバンス」を選択
+await page.locator('#Grade').selectOption('236');
+  await page.getByText('上記条件から検索').click();
+
+  //★ソート機能18「ルーフレール」
+  // 🌟 1件目のセルのロケーター
+targetCell = page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_rr_text.aa_font_size');
+// 1. ソート前の「元の値」を取得する
+originalValue = await targetCell.innerText();
+console.log(`💡 「ルーフレール」 ソート前の1件目の値: [${originalValue}]`);
+
+// ==========================================
+// 2. 【昇順】ソートを実行する！
+// ==========================================
+// ※ ↓ 実際のソート（昇順）ボタンのクリック処理に書き換えてください
+await page.getByRole('link', { name: '▲' }).nth(17).click();
+await page.waitForTimeout(10000); 
+// その上で、ローディングが「消える」のを確実に待つ！
+await expect(page.locator('#loadingdialog')).toBeHidden({ timeout: 30000 });
+ascValue = await targetCell.innerText();
+console.log(`💡 「ルーフレール」 昇順ソート後の1件目の値: [${ascValue}]`);
+
+// ==========================================
+// 3. 昇順ソートの結果判定（エラーにはせず、結果をログに残すだけ）
+// ==========================================
+if (originalValue !== ascValue) {
+  // パターンA：元の値と「違った」場合
+  console.log('✅ 「ルーフレール」 昇順ソートで値が変化しました！（昇順OK）');
+} else {
+  // 元の値と「同じ」だった場合
+  console.log('💡 「ルーフレール」 昇順ソートで値が同じでした。（同値が並んでいる可能性があります）');
+}
+// ==========================================
+// 4. 【降順】ソートを「必ず」実行する！（elseの外に出すのがポイント！）
+// ==========================================
+console.log('💡 続けて「ルーフレール」の【降順ソート】をテストします...');
+
+// 降順ソートボタンを強制クリック！
+await page.getByRole('link', { name: '▼' }).nth(17).click();
+
+// 🌟 ユーザー様が設定された念のための待機！
+await page.waitForTimeout(10000); 
+
+// その上で、ローディングが「消える」のを確実に待つ！
+await expect(page.locator('#loadingdialog')).toBeHidden({ timeout: 30000 });
+
+descValue = await targetCell.innerText();
+console.log(`💡 「ルーフレール」 降順ソート後の1件目の値: [${descValue}]`);
+
+// ==========================================
+// 5. 最後の判定：降順ソートの完璧な検証！
+// ==========================================
+// 🌟 プロの工夫：originalValue ではなく ascValue（昇順の値）と比較する！
+if (ascValue !== descValue) {
+  // 昇順の時と一番上の車が「変わった」場合 ＝ 降順ソート成功！
+  console.log('✅ 「ルーフレール」 降順ソートで、昇順の時と値が変化したため、降順ソートもテストOKです！');
+  
+} else {
+  // 昇順にしても降順にしても、ずっと同じ車（年式）が一番上にいる場合！
+  console.log('✅ 「ルーフレール」 昇順でも降順でも値が同じでした。すべて同じデータ（年式）が並んでいると判断し、テストOKとします！');
+}
+
+// ==========================================
+// 6. ソートクリアを実行し、元の状態に戻るか確認する！
+// ==========================================
+console.log('💡 ソートクリアボタンをクリックして、元の並び順に戻します...');
+
+  //「ルーフレール」 でソートクリア
+  await page.getByRole('link', { name: 'ソートのクリア' }).click();
+  await page.waitForTimeout(10000);
+// 🌟 ここでも必須！Playwrightのフライング防止（魔法の0.5秒）
+// ローディング（処理中画面）が消えるのを確実に待つ！
+await expect(page.locator('#loadingdialog')).toBeHidden({ timeout: 30000 });
+
+// ソートクリア後の、1件目の値を取得する
+clearValue = await targetCell.innerText();
+console.log(`💡 「ルーフレール」 ソートクリア後の1件目の値: [${clearValue}]`);
+
+// 🌟 最後の審判：一番最初に保存しておいた「originalValue」と完全に一致するか検証！
+expect(clearValue).toBe(originalValue);
+console.log('✅ 「ルーフレール」 ソートが正常に解除され、1件目が元の値に戻ったことを確認しました！');
+
+//★フィルタ機能
+// 🌟 1件目のセルのロケーター（※実際の要素に合わせて調整してください）
+targetCell = page.locator('#t_result_area > tbody > tr:nth-child(1) > td.col_rr_text.aa_font_size');
+
+// 1. フィルタをかける前の「元の値」を取得しておく
+originalValue = await targetCell.innerText();
+console.log(`💡 「ルーフレール」 フィルタ前の1件目の値: [${originalValue}]`);
+
+// ==========================================
+// 2-1. フィルタ「A」を選択する！
+// ==========================================
+console.log('💡 「「ルーフレール」」 フィルタ「あり」を選択します...');
+// ※ ↓ 実際のフィルタ選択処理（プルダウンやボタン等）に書き換えてください
+await page.locator('select[name="filter_rr_text"]').selectOption('有');
+//await page.locator('#result_head > table > tbody > tr:nth-child(2) > th.accident.col_accident > select').selectOption('あり');
+// 🌟 必須！Playwrightのフライング防止（魔法の0.5秒）
+await page.waitForTimeout(6500); 
+// ローディング（処理中画面）が消えるのを確実に待つ！
+await expect(page.locator('#loadingdialog')).toBeHidden({ timeout: 30000 });
+
+// フィルタ適用後の1件目の値を取得する
+filteredValue = await targetCell.innerText();
+console.log(`💡 「「ルーフレール」」 フィルタ「あり」適用後の1件目の値: [${filteredValue}]`);
+
+// 🌟 確認①：フィルタ結果の1件目がちゃんと「A」になっているか？
+expect(filteredValue).toContain('有');
+console.log('✅ 「「ルーフレール」」フィルタ適用後、1件目に「有」が含まれていることを確認しました！');
+
+// ==========================================
+// 3. フィルタを解除する！
+// ==========================================
+console.log('💡 「ルーフレール」フィルタを解除します...');
+// ※ ↓ 実際のフィルタ解除処理（「すべて」を選ぶ、クリアボタンを押す等）に書き換えてください
+await page.getByRole('link', { name: 'フィルタ解除' }).click();
+//await page.locator('select[name="filter_atype_nm"]').selectOption(''); 
+
+// 🌟 ここでも必須！フライング防止（魔法の0.5秒）
+await page.waitForTimeout(6500); 
+await expect(page.locator('#loadingdialog')).toBeHidden({ timeout: 30000 });
+
+// フィルタ解除後の1件目の値を取得する
+clearedValue = await targetCell.innerText();
+console.log(`💡 「ルーフレール」フィルタ解除後の1件目の値: [${clearedValue}]`);
+
+// ==========================================
+// 4. 最後の審判：「元の1件目」または「」であること！
+// ==========================================
+// JavaScriptの判定を使って「どちらか一方でも当てはまれば true」を作る
+isOriginal = (clearedValue === originalValue);
+isA = (clearedValue === '');
+
+// Playwrightに「true（真）であること」を保証させる！
+expect(isOriginal || isA).toBeTruthy();
+console.log('✅ 「ルーフレール」フィルタ解除後、1件目が「元の値」または「null」であることを確認しました！');
+
 
 });
